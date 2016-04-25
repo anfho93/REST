@@ -27,14 +27,14 @@ class Api extends CI_Controller {
 
     private function load_version($version = "v2", $class = "def") {
         try {
-            //echo $class;
+            //echo $version." - ".$class;
             $class = ucfirst($class);
             if ($class == "def")
                 exit("El recurso no existe2");
             switch ($version) {
                 case "v1":
 
-                    if (file_exists(APPPATH. "controllers\api\Vr1\\$class.php")) {
+                    if (file_exists(APPPATH. "controllers/api/Vr1/$class.php")) {
                         require ("api/Vr1/$class.php");
                         $this->api = new $class();
                         return true;
@@ -43,7 +43,7 @@ class Api extends CI_Controller {
                     break;
                 case "v2":
                    
-                    if (file_exists(APPPATH."controllers\api\Vr2\\$class.php")) {
+                    if (file_exists(APPPATH."controllers/api/Vr2/$class.php")) {
                         require ("api/Vr2/$class.php");
                         $this->api = new $class();
                         return true;
@@ -51,7 +51,7 @@ class Api extends CI_Controller {
                         return false;
                     break;
                 default:
-                    if (file_exists(APPPATH."controllers\api\Vr1\\$class")) {
+                    if (file_exists(APPPATH."controllers/api/Vr1/$class.php")) {
                         require ("api/Vr1/$class.php");
                         $this->api = new $class();
                         return true;
