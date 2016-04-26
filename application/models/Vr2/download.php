@@ -9,7 +9,7 @@ class Download extends CI_Model {
     /**
     * @var string Variable que representa el nombre de la tabla a mapear 
     */
-    var $tablename = "downloads";
+    var $tablename = "ethas_downloads";
     /**
     * @var Array    utilizado para almacenas valores de las llaves.
     */
@@ -24,6 +24,8 @@ class Download extends CI_Model {
     {
         // Call the Model constructor
         parent::__construct();
+       // $this->otherdb = $this->load->database('impala', TRUE);
+        
          
     }
     
@@ -40,15 +42,16 @@ class Download extends CI_Model {
      */
     function getCurrentIdDownload($idApp,$idDevice) {
         
-       $otherdb = $this->load->database('impala', TRUE);      
-       $otherdb->query("refresh downloads");
-       $result = $otherdb->query("select id_download from downloads where id_app = '$idApp' and idDevice = '$idDevice'");
+       //$otherdb = $this->load->database('impala', TRUE);      
+       $otherdb = $this->db;      
+      // $otherdb->query("refresh downloads");
+       $result = $otherdb->query("select id_download from $this->tablename where id_app = '$idApp' and iddevice = '$idDevice'");
        //$result = $otherdb->get_where($this->tablename, array('id_app' => $idApp, "idDevice" => $idDevice ));
        if($result!=null && $result->first_row()!=null)
        {
             $item = $result->first_row();
             $id = $item->id_download;
-            
+            //print_r($item);
             return $id;
        }
        return "-1";
@@ -82,9 +85,10 @@ class Download extends CI_Model {
         if($appversion==null){
             $appversion = "1";
         }
-        $otherdb = $this->load->database('impala', TRUE);
+       // $otherdb = $this->load->database('impala', TRUE);
+        $otherdb = $this->db;   
         // $this->load->model(ETHVERSION."appstatistics");
-       // $this->addPartition();
+        // $this->addPartition();
         $this->load->model(ETHVERSION."app");
         $newId = $this->getCurrentIdDownload($idApp,$idDevice);
         //echo "currentId ".$newId;
@@ -133,7 +137,7 @@ class Download extends CI_Model {
             $platformName = "<unknown>";
         }
        
-        $otherdb->query("insert into downloads "
+        $otherdb->query("insert into $this->tablename "
                 . "(systemLanguage,processorCount,systemMemorySize,supportsGyroscope,supportsAccelerometer,id_app,ipDownload,idDevice,graphicsDeviceVendor,id_download,supportsLocationService,supportsVibration,platformVersion,name,model,downloadtime,platformName, year, month, day) "
                 . "values ("
                 . "'".@$this->attributes['systemLanguage']."',"
@@ -187,7 +191,7 @@ class Download extends CI_Model {
     * @param  String $finalTime fecha final en formato Y-m-d.
     */
     function calculateActiveUsers($idApp, $initialTime, $finalTime){
-        $query = "SELECT * from ethas_download where  id_app = '$idApp' and lastConnection BETWEEN '$initialTime' and '$finalTime'";
+        $query = "SELECT * from $this->tablename where  id_app = '$idApp' and lastConnection BETWEEN '$initialTime' and '$finalTime'";
         //$data = $this->db->query($query);
         //return $data->result_array();
     }
@@ -210,9 +214,10 @@ class Download extends CI_Model {
        // $otherdb->query("refresh downloads");
         //$this->db->query("refresh downloads");
         
-        $otherdb = $this->load->database('impala', TRUE); 
-        $otherdb->query("refresh downloads");
-        $query = "Select *  from downloads WHERE id_app='$idApp' and id_download='$id_download'";
+        //$otherdb = $this->load->database('impala', TRUE); 
+        //$otherdb->query("refresh downloads");
+        $otherdb = $this->db;
+        $query = "Select *  from $this->tablename WHERE id_app='$idApp' and id_download='$id_download'";
         $result = $otherdb->query($query);
         //se supone que solo existe una downloadcon ese id download y con ese id_app
         return $result->result_array()[0];     
@@ -225,9 +230,10 @@ class Download extends CI_Model {
     * @return boolean, si la descarga ya fue registrada o no.
     */
     function existDownload($idApp, $idDownload){
-         $otherdb = $this->load->database('impala', TRUE); 
-         $otherdb->query("refresh downloads");
+         //$otherdb = $this->load->database('impala', TRUE); 
+         //$otherdb->query("refresh downloads");
         //$result = $this->db->get_where($this->tablename, array("id_app" => $idApp, "id_download" => $idDownload));
+        $otherdb = $this->db;   
         $query = "Select *  from $this->tablename WHERE id_app = '$idApp' and id_download = '$idDownload'";
         $result = $otherdb->query($query);
         //se supone que solo existe una downloadcon ese id download y con ese id_app
@@ -245,7 +251,8 @@ class Download extends CI_Model {
     */
     function getDownloadDate($idApp, $idDownload){
         
-         $otherdb = $this->load->database('impala', TRUE); 
+        // $otherdb = $this->load->database('impala', TRUE); 
+        $otherdb = $this->db;   
         $query = "Select *  from $this->tablename WHERE id_app = '$idApp' and id_download = '$idDownload'";
         $result =  $otherdb->query($query);
         //$result = $this->db->get_where($this->tablename, array("id_app" => $idApp, "id_download" => $idDownload));
@@ -265,10 +272,11 @@ class Download extends CI_Model {
       * @param string $idApp , Id de la aplicacion a obtener los usuarios.
       */
       function getTotalUsers($idApp, $filters =null){
-          
-         $query = "Select COUNT(*) as count from ethas_download WHERE id_app = '$idApp'";
-         $result = $this->db->query($query);
-         
+         //$otherdb = $this->load->database('impala', TRUE);
+         //$otherdb->query("refresh downloads");
+          $otherdb = $this->db;   
+         $query = "Select COUNT(*) as count from $this->tablename WHERE id_app = '$idApp'";
+         $result = $otherdb->query($query);
          return (int)($result->first_row()->count) ;
       }
 
@@ -281,8 +289,9 @@ class Download extends CI_Model {
       */
       function getAverageUserSession($idApp, $initialDate=null, $finalDate=null){
           
-         $otherdb = $this->load->database('impala', TRUE);
-         $otherdb->query("refresh downloads");
+         //$otherdb = $this->load->database('impala', TRUE);
+         //$otherdb->query("refresh downloads");
+          $otherdb = $this->db;   
           if($initialDate!=null && $finalDate != null)
           {
               $query = "SELECT id_download, count(*) as sessions from sessions where id_app = '$idApp' and  start_date >= $initialDate and start_date <= $finalDate GROUP BY id_download";          
@@ -310,8 +319,9 @@ class Download extends CI_Model {
       * 
       */
       function getDownloads($idApp){    
-        $otherdb = $this->load->database('impala', TRUE);
-        $otherdb->query("refresh downloads");
+        //$otherdb = $this->load->database('impala', TRUE);
+        //$otherdb->query("refresh downloads");
+          $otherdb = $this->db;   
         return  $otherdb->query("select  * from $this->tablename where id_app = '$idApp'")->result_array();        
       }
 
@@ -330,8 +340,9 @@ class Download extends CI_Model {
       * @return array , que contiene todas las descargas. 
       */
       function getAllDownloads(){  
-        $otherdb = $this->load->database('impala', TRUE);
-        $otherdb->query("refresh downloads");
+        //$otherdb = $this->load->database('impala', TRUE);
+        //$otherdb->query("refresh downloads");
+          $otherdb = $this->db;   
         return  $otherdb->get($this->tablename)->result_array();
       }
 

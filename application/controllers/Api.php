@@ -44,6 +44,7 @@ class Api extends CI_Controller {
                 case "v2":
                    
                     if (file_exists(APPPATH."controllers/api/Vr2/$class.php")) {
+                        define("ETHVERSION", "Vr2/");
                         require ("api/Vr2/$class.php");
                         $this->api = new $class();
                         return true;

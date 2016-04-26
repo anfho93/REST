@@ -22,10 +22,22 @@ class App extends REST_Controller {
     }
 
     public function index_get() {
-        $this->response([
-            'status' => FALSE,
-            'message' => "No implementado aun"
-                ], REST_Controller::HTTP_BAD_REQUEST);
+            $this->load->model(ETHVERSION.'App', "application");
+            $user_email = $this->getUrlData('useremail','base64');
+            $result =$this->application->getApps($user_email);
+            if(count($result)>0)
+            {
+                 $this->response([
+                'status' => FALSE,
+                'message' => "No implementado aun"
+                    ], REST_Controller::HTTP_BAD_REQUEST);
+               // $this->prepareAndResponse("200","Success",array("appRegistred"=>"true", "result"=> json_encode($result)));
+
+            }else 
+            {
+               // $this->prepareAndResponse("201","Success",array("appRegistred"=>"false", "result"=>json_encode(array())));    
+            } 
+       
     }
 
     public function index_post() {
