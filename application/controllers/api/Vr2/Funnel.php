@@ -17,5 +17,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH . '/libraries/REST_Controller.php';
 
 class Funnel extends REST_Controller{
-    //put your code here
+    
+    public function __construct() {
+        parent::__construct();
+        $methodname = strtolower("index_" . $this->request->method);
+        if (method_exists($this, $methodname)) {
+            $this->$methodname();
+        }
+    }
+
+    public function index_get() {
+        $this->response([
+            'status' => FALSE,
+            'message' => "No implementado aun"
+                ], REST_Controller::HTTP_BAD_REQUEST);
+    }
+
+    public function index_post() {
+        $this->response([
+            'status' => FALSE,
+            'message' => "No implementado aun"
+                ], REST_Controller::HTTP_BAD_REQUEST);
+    }
+
+    public function index_put() {
+       $this->response([
+            'status' => FALSE,
+            'message' => "No implementado aun"
+                ], REST_Controller::HTTP_BAD_REQUEST); 
+    }
+
+    public function index_delete() {
+       $this->response([
+            'status' => FALSE,
+            'message' => "No implementado aun"
+                ], REST_Controller::HTTP_BAD_REQUEST); 
+    }
 }
