@@ -363,6 +363,15 @@ abstract class REST_Controller extends CI_Controller {
     }
 
     /**
+     * Funcion agregada por Andres Herrera
+     * @param String $cadena codificada en base64
+     * @return string decodificado base4
+     */
+    protected function b64d($cadena)
+    {
+        return base64_decode($cadena);
+    }
+    /**
      * Constructor for the REST API
      *
      * @access public

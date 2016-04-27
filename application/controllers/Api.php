@@ -17,20 +17,20 @@ class Api extends CI_Controller {
 
     public function index() {
 
-        // echo $this->uri->segment(2);
+         //echo $this->uri->segment(2);
         if ($this->load_version($this->uri->segment(2), $this->uri->segment(3))) {
             
         } else {
-            exit("Version no encontrada");
+            //exit(" Version no encontrada");
         }
     }
 
     private function load_version($version = "v2", $class = "def") {
         try {
-            //echo $version." - ".$class;
+            
             $class = ucfirst($class);
             if ($class == "def")
-                exit("El recurso no existe2");
+              return false;
             switch ($version) {
                 case "v1":
 
@@ -45,6 +45,7 @@ class Api extends CI_Controller {
                    
                     if (file_exists(APPPATH."controllers/api/Vr2/$class.php")) {
                         define("ETHVERSION", "Vr2/");
+                        
                         require ("api/Vr2/$class.php");
                         $this->api = new $class();
                         return true;

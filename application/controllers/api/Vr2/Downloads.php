@@ -44,6 +44,7 @@ class Downloads extends REST_Controller {
     }
 
     public function index_post() {
+        
         $this->response([
         'status' => TRUE,
         'message' => "elimine"

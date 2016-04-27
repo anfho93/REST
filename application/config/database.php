@@ -94,3 +94,18 @@ $db['default'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
+
+
+$db['impala']['hostname'] = "DSN=MyImpala;Host=ethgame.com;Port=21050";                
+$db['impala']['username'] = 'root';
+$db['impala']['password'] = '1234qwer+ethereal';
+$db['impala']['database'] = 'default';
+$db['impala']['dbdriver'] = 'odbc';
+$db['impala']['dbprefix'] = '';
+$db['impala']['pconnect'] = TRUE;
+$db['impala']['db_debug'] = true;
+$db['impala']['char_set'] = 'utf8';
+$db['impala']['dbcollat'] = 'utf8_general_ci';
+$db['impala']['swap_pre'] = '';
+$db['impala']['autoinit'] = TRUE;
+$db['impala']['stricton'] = FALSE;
