@@ -54,6 +54,11 @@
  * NOTE: If you change these, also change the error_reporting() code below
  */
 	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+        putenv('ODBCINI=/etc/odbc.ini');
+        putenv('LD_LIBRARY_PATH=/usr/local/lib:/opt/cloudera/impalaodbc/lib/64');
+        putenv( 'SIMBADN=/etc/cloudera.impalaodbc.ini');
+        putenv('ODBCSYSINI=/etc');
+        putenv('CLOUDERAIMPALAINI=/etc/cloudera.impalaodbc.ini')    ;
 
 /*
  *---------------------------------------------------------------
