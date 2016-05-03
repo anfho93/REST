@@ -1496,6 +1496,7 @@ abstract class REST_Controller extends CI_Controller {
         // These should exist if a DELETE request
         if ($this->input->method() === 'delete')
         {
+            
             $this->_delete_args = $this->input->input_stream();
         }
     }

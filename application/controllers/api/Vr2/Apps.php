@@ -15,6 +15,7 @@ class Apps extends REST_Controller {
 
     public function __construct() {
         parent::__construct();
+       
         $methodname = strtolower("index_" . $this->request->method);
         if (method_exists($this, $methodname)) {
             $this->$methodname();
@@ -42,13 +43,14 @@ class Apps extends REST_Controller {
     }
 
     public function index_post() {
+        
         $this->load->model(ETHVERSION . 'App', "application");
-        $name_app = $this->b64d($this->post('name_app'));
-        $description = $this->b64d($this->post('description'));
-        $type = $this->b64d($this->post('inputType'));
-        $user_email = $this->b64d($this->post('usermail'));
-        $platforms = $this->b64d($this->post('platforms'));
-
+        $name_app = ($this->post('name_app'));
+        $description = ($this->post('description'));
+        $type = ($this->post('inputType'));
+        $user_email = ($this->post('usermail'));
+        $platforms = ($this->post('platforms'));
+        
         if ($this->canRegisterApp($user_email)) {
             $result = $this->application->registerApp($type, $name_app, $description, $user_email, $platforms);
             if ($result !== false) {
@@ -63,23 +65,24 @@ class Apps extends REST_Controller {
                         ], REST_Controller::HTTP_CREATED);
             }
         } else {
-            $this->response([
+           $this->response([
                 "appRegistred" => "false",
                 "result" => "the user can't register app"
                     ], REST_Controller::HTTP_BAD_REQUEST);
+            
         }
     }
 
-    //falta desactivar app
-
+    //falta desactivar app    
     public function index_put() {
+        
         $this->load->model(ETHVERSION . 'App', "application");
-        $idApp = $this->b64d($this->post('idApp'));
-        $name_app = $this->b64d($this->post('name_app'));
-        $description = $this->b64d($this->post('description'));
-        $type = $this->b64d($this->post('inputType'));
-        $user_email = $this->b64d($this->post('usermail'));
-        $platforms = $this->b64d($this->post('platforms'));
+        $idApp = ($this->post('idApp'));
+        $name_app = ($this->put('name_app'));
+        $description =($this->put('description'));
+        $type = ($this->put('inputType'));
+        $user_email = ($this->put('usermail'));
+        $platforms = ($this->put('platforms'));
 
         if ($this->canRegisterApp($user_email)) {
             $result = $this->application->updateApp($idApp, $type, $name_app, $description, $user_email, $platforms);
@@ -103,11 +106,10 @@ class Apps extends REST_Controller {
     }
 
     public function index_delete() {
-
-        $idApp = $this->b64d($this->post('idApp'));
-        $email = $this->b64d($this->post('useremail'));
-        $status = $this->b64d($this->post('active'));
-        $appname = $this->b64d($this->post('appname'));
+        $idApp = ($this->query('idApp'));
+        $email = ($this->query('usermail'));
+        $status = ($this->query('active'));
+        $appname = ($this->query('appname'));
         $this->load->model(ETHVERSION . "App", "app");
         $this->load->model(ETHVERSION . "User", "user");
         if ($this->user->userHaveApp($email, $idApp)) {
@@ -133,6 +135,8 @@ class Apps extends REST_Controller {
                
             }
         } else {
+           echo $idApp."asdasd";
+            
             $this->response([
                 'status' => FALSE,
                 'message' => "user doesn't have permission"

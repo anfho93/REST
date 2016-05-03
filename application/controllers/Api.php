@@ -17,11 +17,12 @@ class Api extends CI_Controller {
 
     public function index() {
 
-         //echo $this->uri->segment(2);
+        
+         
         if ($this->load_version($this->uri->segment(2), $this->uri->segment(3))) {
             
         } else {
-            //exit(" Version no encontrada");
+         
         }
     }
 
