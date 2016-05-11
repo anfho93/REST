@@ -3,9 +3,10 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // This can be removed if you use __autoload() in config.php OR use Modular Extensions
-require APPPATH . '/libraries/REST_Controller.php';
+//require APPPATH . '/libraries/REST_Controller.php';
+require 'EthRESTController.php';
 
-class Downloads extends REST_Controller {
+class Downloads extends EthRESTController {
 
     public function __construct() {
         parent::__construct();
@@ -49,7 +50,7 @@ class Downloads extends REST_Controller {
     
     
     private function getIdDownload(){
-        echo "entre";
+       // echo "entre";
         $idDevice = $this->get('idDevice');
         $model = $this->get('model');
         $name = $this->get('name');

@@ -59,7 +59,10 @@
         putenv( 'SIMBADN=/etc/cloudera.impalaodbc.ini');
         putenv('ODBCSYSINI=/etc');
         putenv('CLOUDERAIMPALAINI=/etc/cloudera.impalaodbc.ini')    ;
-
+        
+        define('DATAROUTE', '/var/www/html/Database/');
+	define('TIEMPOINACTIVIDAD', 3600);//una hora tiempo maximo inactividad
+	ini_set('session.gc-maxlifetime', 3600);
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING

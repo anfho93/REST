@@ -1,7 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
-use Aws\DynamoDb\Iterator\ItemIterator;
 
 class Log extends CI_Model {
 
@@ -80,7 +79,7 @@ class Log extends CI_Model {
         $this->otherdb->where("id_app","$idApp");
         $this->otherdb->group_by("category");
         $result = $this->otherdb->get();
-        print_r($result->result_array());
+        //print_r($result->result_array());
         return  $result->result_array();   
     }
     

@@ -9,9 +9,10 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // This can be removed if you use __autoload() in config.php OR use Modular Extensions
-require APPPATH . '/libraries/REST_Controller.php';
+//require APPPATH . '/libraries/REST_Controller.php';
+require 'EthRESTController.php';
 
-class Apps extends REST_Controller {
+class Apps extends EthRESTController {
 
     public function __construct() {
         parent::__construct();
