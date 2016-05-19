@@ -32,55 +32,79 @@ class Segments extends EthRESTController {
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
                 case "types":
-                    $this->getTipos();                        
+                    $this->getTipos();
                     break;
                 case "id":
                     $this->getSegment();
+                    break;
+                case "operands":
+                    $this->getOperandos();
+                    break;
+                case "properties":
+                    $this->getProperties();
                     break;
             }
         } else {
             $this->getUserSegments();
         }
     }
-    
-      /**
+
+    /**
+     * Esta funcion obntiene todas las propiedades 
+     * disponibles para los dispositivos
+     */
+    private function getProperties() {
+        $this->load->model(ETHVERSION . 'segment', "segment");
+        $result = $this->segment->getAllProperties();
+        $this->prepareAndResponse("200", "Success", array("result" => $result));
+    }
+
+    /**
+     * Funcion que permite obtener los operandos disponibles.
+     */
+    private function getOperandos() {
+        $this->load->model(ETHVERSION . 'segment', "segment");
+        $this->prepareAndResponse("200", "Success", array("result" => $this->segment->getAllOperandos()));
+    }
+
+    /**
      *  Funcionalidad que permite obtener un segmento
      *  de un usuario basado en el id y correo del usuario 
      *  de la aplicacion
      */
-    private function getSegment(){        
+    private function getSegment() {
         $user_email = $this->get('useremail');
         $idSeg = $this->get('id_segement');
         $result = $this->getByID($user_email, $idSeg);
-        if(!empty($result)){
+        if (!empty($result)) {
             $this->response([
-            'status' => TRUE,
-            'message' => "Success",
-                ], REST_Controller::HTTP_ACCEPTED);
+                'status' => TRUE,
+                'message' => "Success",
+                    ], REST_Controller::HTTP_ACCEPTED);
             //$this->prepareAndResponse("200","Success",array( "result"=> $result));
-        }else{
-             $this->response([
-            'status' => FALSE,
-            'message' => "Fail",
-                ], REST_Controller::HTTP_BAD_REQUEST);
+        } else {
+            $this->response([
+                'status' => FALSE,
+                'message' => "Fail",
+                    ], REST_Controller::HTTP_BAD_REQUEST);
             //$this->prepareAndResponse("200","Fail",array( "result"=> "No such segment"));
         }
     }
-    
-    private function getTipos(){
+
+    private function getTipos() {
         $result = $this->segment->getTipos();
-        if(!empty($result)){
+        if (!empty($result)) {
             $this->response([
-            'status' => TRUE,
-            'message' => "success",
-            "result" => $result
-                ], REST_Controller::HTTP_OK);
+                'status' => TRUE,
+                'message' => "success",
+                "result" => $result
+                    ], REST_Controller::HTTP_OK);
             //$this->prepareAndResponse("200","Success",array( "result"=> $result));
-        }else{
+        } else {
             $this->response([
-            'status' => FALSE,
-            'message' => "No such element",
-                ], REST_Controller::HTTP_FORBIDDEN);
+                'status' => FALSE,
+                'message' => "No such element",
+                    ], REST_Controller::HTTP_FORBIDDEN);
             //$this->prepareAndResponse("200","Fail",array( "result"=> "No such segment"));
         }
     }
@@ -113,7 +137,6 @@ class Segments extends EthRESTController {
                 'message' => "Success",
                 "result" => $result
                     ], REST_Controller::HTTP_BAD_REQUEST);
-            
         } else {
             $this->response([
                 'status' => FALSE,

@@ -27,10 +27,7 @@ class Funnel extends EthRESTController{
         }
     }
     
-    private function _pre_get() {
-        $segmento = $this->uri->segment(4);
-        return $segmento;
-    }
+   
     
     public function index_get() {
         if ($this->_pre_get() != null) {
@@ -41,7 +38,8 @@ class Funnel extends EthRESTController{
                     return;
                 case "data":
                     $this->funnelData();
-                default : 
+                    break;
+                case "status" : 
                     $this->funnelStatus();
                     break;
             }

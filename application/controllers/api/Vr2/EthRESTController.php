@@ -104,5 +104,10 @@ class EthRESTController extends REST_Controller {
 
         return $this->app->isUsersApp($idApp, $user_email);
     }
+    
+    protected function _pre_get() {
+        $segmento = $this->uri->segment(4);
+        return $segmento;
+    }
 
 }
