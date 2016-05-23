@@ -109,5 +109,7 @@ class EthRESTController extends REST_Controller {
         $segmento = $this->uri->segment(4);
         return $segmento;
     }
+    
+    
 
 }

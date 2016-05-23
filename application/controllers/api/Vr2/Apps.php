@@ -16,7 +16,7 @@ class Apps extends EthRESTController {
 
     public function __construct() {
         parent::__construct();
-       
+
         $methodname = strtolower("index_" . $this->request->method);
         if (method_exists($this, $methodname)) {
             $this->$methodname();
@@ -24,8 +24,32 @@ class Apps extends EthRESTController {
     }
 
     public function index_get() {
-        
-        $this->load->model(ETHVERSION .'app', "application");
+        if ($this->_pre_get() != null) {
+            switch ($this->_pre_get()) {
+                case "url" :
+                    $this->getURLDownload();
+                    break;
+            }
+        } else {
+            $this->getUserApps();
+        }
+    }
+
+    private function getURLDownload() {
+        $this->load->model(ETHVERSION . 'App', "application");
+        $id_app = $this->get('idApp');
+        $platform = $this->get('platform');
+        if ($this->application->appExists($id_app)) {
+            $url = $this->application->isPlatform($id_app, $platform);
+            //$this->prepareAndResponse("200", "Success", array("result" => "$url"));
+        } else {
+            $url = "none";
+            //$this->prepareAndResponse("200", "Failed", array("result" => "$url"));
+        }
+    }
+
+    private function getUserApps() {
+        $this->load->model(ETHVERSION . 'app', "application");
         $user_email = ($this->get('useremail'));
         $result = $this->application->getApps($user_email);
         if (count($result) > 0) {
@@ -44,14 +68,14 @@ class Apps extends EthRESTController {
     }
 
     public function index_post() {
-        
+
         $this->load->model(ETHVERSION . 'App', "application");
         $name_app = ($this->post('name_app'));
         $description = ($this->post('description'));
         $type = ($this->post('inputType'));
         $user_email = ($this->post('usermail'));
         $platforms = ($this->post('platforms'));
-        
+
         if ($this->canRegisterApp($user_email)) {
             $result = $this->application->registerApp($type, $name_app, $description, $user_email, $platforms);
             if ($result !== false) {
@@ -66,21 +90,20 @@ class Apps extends EthRESTController {
                         ], REST_Controller::HTTP_CREATED);
             }
         } else {
-           $this->response([
+            $this->response([
                 "appRegistred" => "false",
                 "result" => "the user can't register app"
                     ], REST_Controller::HTTP_BAD_REQUEST);
-            
         }
     }
 
     //falta desactivar app    
     public function index_put() {
-        
+
         $this->load->model(ETHVERSION . 'App', "application");
         $idApp = ($this->post('idApp'));
         $name_app = ($this->put('name_app'));
-        $description =($this->put('description'));
+        $description = ($this->put('description'));
         $type = ($this->put('inputType'));
         $user_email = ($this->put('usermail'));
         $platforms = ($this->put('platforms'));
@@ -114,35 +137,32 @@ class Apps extends EthRESTController {
         $this->load->model(ETHVERSION . "App", "app");
         $this->load->model(ETHVERSION . "User", "user");
         if ($this->user->userHaveApp($email, $idApp)) {
-            
+
             if ($status) {
                 $result = $this->app->activateApplication($idApp, $appname);
             } else {
                 $result = $this->app->deactivateApplication($idApp, $appname);
             }
-            
+
             if ($result) {
                 $this->response([
                     'status' => TRUE,
                     'message' => "Success",
-                    "result"=> "App Updated"
+                    "result" => "App Updated"
                         ], REST_Controller::HTTP_ACCEPTED);
-                
             } else {
                 $this->response([
                     'status' => FALSE,
                     'message' => "App not Updated"
                         ], REST_Controller::HTTP_BAD_REQUEST);
-               
             }
         } else {
-           echo $idApp."asdasd";
-            
+            echo $idApp . "asdasd";
+
             $this->response([
                 'status' => FALSE,
                 'message' => "user doesn't have permission"
                     ], REST_Controller::HTTP_BAD_REQUEST);
-            
         }
     }
 

@@ -24,13 +24,10 @@ class Downloads extends EthRESTController {
     public function index_get() {        
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
-                case "statistics":
-                    $this->statistics();
-                    return;
                 case "id" : 
-                       $this->getIdDownload();
-                    
+                       $this->getIdDownload();                    
                     break;
+                
             }
         } else {
             $this->response([
@@ -40,13 +37,7 @@ class Downloads extends EthRESTController {
         }
     }
 
-    private function statistics() {
-        $this->response([
-            'status' => TRUE,
-            'result' => "estas son las estadisticas",
-            'message'=> "message"
-                ], REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
-    }
+    
     
     
     private function getIdDownload(){

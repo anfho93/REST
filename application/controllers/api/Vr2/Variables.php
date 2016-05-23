@@ -160,10 +160,39 @@ class Variables extends REST_Controller {
                     break;
             }
         } else {
-            $this->response([
-                'status' => FALSE,
-                'message' => "No implementado aun"
-                    ], REST_Controller::HTTP_BAD_REQUEST);
+            $this->modifyVariable();
+        }
+    }
+
+    private function modifyVariable() {
+        $idApp = $this->put('idApp');
+        $versionEthAppsSystem = $this->put('versionEthAppsSystem');
+        $useremail = $this->put('useremail');
+        $idVar = $this->put('idvar');
+        $value = $this->put('value');
+        $cond = null;
+        if ($this->app->appExists($idApp) && $this->user->userHaveApp($useremail, $idApp)) {//validar el usuario y el app
+            $variable = $this->variable->getVariableByID($idApp, $idVar);
+            if ($variable != null) {
+                $class = $variable->class;
+                if ($class == "A/B") {
+                    $cond = $this->getUrlData('cond', 'base64');
+                }
+                $result = $this->variable->modifyVariable($idApp, $idVar, $value);
+                if ($result != false) {
+                   // $this->prepareAndResponse("200", "Success", array("Variable Updated" => "true"));
+                   $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "true"], REST_Controller::HTTP_ACCEPTED);
+                } else
+                {
+                    $this->response(['status' => FALSE, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+                } // $this->prepareAndResponse("200", "The dataset doesn't match", array("Variable Updated" => "false"));
+            }else {
+                //$this->prepareAndResponse("200", "The dataset doesn't match", array("Variable Updated" => "false"));
+                $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+            }
+        } else {
+            //$this->prepareAndResponse("200", "The dataset doesn't match", array("Variable Updated" => "false"));
+            $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
         }
     }
 
@@ -225,35 +254,34 @@ class Variables extends REST_Controller {
     }
 
     public function index_delete() {
-
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
                 case "abcond":
                     $this->deletecond();
-                 break;
+                    break;
             }
         } else {
             $this->deleteVar();
         }
     }
-    
+
     /**
      * Esta funcion recibe parametros via POST para la 
      * eliminacion de una condicion de variable de tipo A/B
      */
-    private function  deletecond(){
+    private function deletecond() {
         //$this->load->model(ETHVERSION."Variable","variable");
         $versionEthAppsSystem = $this->delete('versionEthAppsSystem');
-        $useremail =  $this->delete('useremail');
-        $idabVar =  $this->delete('id_abvar');
-        $idVar =  $this->delete('id_var');          
-        $res = $this->variable->deleteABCond($idVar,$idabVar);      
-        if($res==1){
-           // $this->prepareAndResponse("200","Variable deleted",array("deleted"=>"true"));
-           $this->response(['status' => FALSE, 'message' => "Variable deleted"], REST_Controller::HTTP_OK);            
-        }else{
+        $useremail = $this->delete('useremail');
+        $idabVar = $this->delete('id_abvar');
+        $idVar = $this->delete('id_var');
+        $res = $this->variable->deleteABCond($idVar, $idabVar);
+        if ($res == 1) {
+            // $this->prepareAndResponse("200","Variable deleted",array("deleted"=>"true"));
+            $this->response(['status' => FALSE, 'message' => "Variable deleted"], REST_Controller::HTTP_OK);
+        } else {
             //$this->prepareAndResponse("200","The dataset doesn't match",array("deleted"=>"false"));            
-           $this->response(['status' => FALSE, 'message' => "The dataset doesn't match"], REST_Controller::HTTP_BAD_REQUEST);
+            $this->response(['status' => FALSE, 'message' => "The dataset doesn't match"], REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 
@@ -277,8 +305,6 @@ class Variables extends REST_Controller {
             $this->response(['status' => FALSE, 'message' => "The dataset doesn't match"], REST_Controller::HTTP_BAD_REQUEST);
         }
     }
-
-    
 
     /**
      * Permite obtener los valores de las diferentes variables A/B
