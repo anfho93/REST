@@ -90,8 +90,197 @@ class Statistic extends EthRESTController {
         if ($this->validateData($this->useremail, $this->idApp)) {
             $result = $this->appstatistics->getUsers($this->idApp, $this->initialDate, $this->finalDate);
             //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result, "title"=>"Users"  ));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => "Users"], REST_Controller::HTTP_OK);
         } else {
             // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite saber la cantidad de sesiones por idioma del dispositivo del usuario
+     */
+    private function getSessionsByLanguage() {
+        $this->load->model(ETHVERSION . "Sessionstatistics", "sessStats");
+        $this->loadData($this->sessStats);
+        $result = null;
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->sessStats->getSessionsByLanguage($this->idApp, $this->initialDate, $this->finalDate);
+            $titles = array("Language", "Sessions");
+            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => "Users"], REST_Controller::HTTP_OK);
+        } else {
+            //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite saber la cantidad de sesiones por Sistema operativo del dispositivo del usuario
+     */
+    private function getSessionsByOS() {
+        $this->load->model(ETHVERSION . "Sessionstatistics", "sessStats");
+        $this->loadData($this->sessStats);
+        $result = null;
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->sessStats->getSessionsByOS($this->idApp, $this->initialDate, $this->finalDate);
+            $titles = array("Operative System", "Sessions");
+            // $this->prepareAndResponse("200", "Success", array("success" => "true", "result" => $result, "titles" => $titles));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => $titles], REST_Controller::HTTP_OK);
+        } else {
+            // $this->prepareAndResponse("200", "Fail", array("success" => "false", "result" => array()));
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite saber la cantidad de sesiones por marca  del dispositivo del usuario
+     */
+    private function getSessionsByMB() {
+        $this->load->model(ETHVERSION . "Sessionstatistics", "sessStats");
+        $this->loadData($this->sessStats);
+        $result = null;
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->sessStats->getSessionsByMB($this->idApp, $this->initialDate, $this->finalDate);
+            $titles = array("Mobile Brand", "Sessions");
+            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => $titles], REST_Controller::HTTP_OK);
+        } else {
+            //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite saber la cantidad de usuarios nuevos por sistema operativo del dispositivo del usuario
+     */
+    private function getNewUsersBySO() {
+        $this->load->model(ETHVERSION . "Userstatistics", "userStats");
+        $this->loadData($this->userStats);
+        $result = null;
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $this->userStats->addCondition($this->segment);
+            $result = $this->userStats->getNewUsersBySO($this->idApp, $this->initialDate, $this->finalDate);
+            $titles = array("Operative System", "New Users");
+            // $this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => $titles], REST_Controller::HTTP_OK);
+        } else {
+            // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite obtener los datos de los usuarios nuevos filtrados por OS.
+     */
+    private function getNewUsersDataBySO() {
+        $this->load->model(ETHVERSION . "Userstatistics", "userStats");
+        $this->loadData($this->userStats);
+        $result = null;
+        $OS = $this->getUrlData('platform', 'base64');
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->userStats->getDailyNewUsersBySO($this->idApp, $this->initialDate, $this->finalDate, $OS);
+            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result ));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result], REST_Controller::HTTP_OK);
+        } else {
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite obtener los usuarios activos filtrados por el OS.
+     */
+    private function getActiveUsersDataByOS() {
+        $this->load->model(ETHVERSION . "Userstatistics", "userStats");
+        $this->loadData($this->userStats);
+        $result = null;
+        $OS = $this->getUrlData('platform', 'base64');
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->userStats->getDailyUsersBySO($this->idApp, $this->initialDate, $this->finalDate, $OS);
+            //   $this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result ));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result], REST_Controller::HTTP_OK);
+        } else {
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite ver los usuarios activos basados en el la marca del dispositivo.
+     */
+    private function getActiveUsersDataByMB() {
+        $this->load->model(ETHVERSION . "Userstatistics", "userStats");
+        $this->loadData($this->userStats);
+        $result = null;
+        $mb = $this->getUrlData('mb', 'base64');
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->userStats->getDailyUsersByMB($this->idApp, $this->initialDate, $this->finalDate, $mb);
+            //  $this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result ));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result], REST_Controller::HTTP_OK);
+        } else {
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Permite ver los datos de los usairos activos basados en su idioma.
+     */
+    private function getActiveUsersDataByLang() {
+        $this->load->model(ETHVERSION . "Userstatistics", "userStats");
+        $this->loadData($this->userStats);
+        $result = null;
+        $lang = $this->getUrlData('lang', 'base64');
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->userStats->getActiveUsersByLang($this->idApp, $this->initialDate, $this->finalDate, $lang);
+            // $this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result ));
+            $this->response(['status' => true, 'message' => "Success", "result" => $result], REST_Controller::HTTP_OK);
+        } else {
+            $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+        }
+    }
+
+    /**
+     * Funcion que permite realizar el registro de una aplicacion.
+     * esta funcion recibe los elementos via post o get en base64, son decodificados.
+     * @param string base64, $name_app nombre de la aplicacion,enviado como parametro via POST o GET
+     * @param string base64, $descripcion descripcion de la aplicacion,enviado como parametro via POST o GET
+     * @param string base64, $type tipo de la aplicacion,enviado como parametro via POST o GET
+     * @param string base64, $user_email correo electronico de quien registra la aplicacion, enviado como parametro via POST o GET
+     * @param string base64, $platforms nombre de la aplicacion,enviado como parametro via POST o GET
+     *
+     * @return void | Json , respuesta del servicio wen.
+     *
+     */
+    private function averageUserSession() {
+        $this->load->model(ETHVERSION . "download");
+        $this->load->model(ETHVERSION . "user");
+        $this->load->model(ETHVERSION . "appstatistics");
+        $user_email = $this->getUrlData('user_email', 'base64');
+        $idApp = $this->getUrlData('idApp', 'base64');
+        $initialDate = $this->getUrlData('initialDate', 'base64');
+        $finalDate = $this->getUrlData('finalDate', 'base64');
+        
+        if ($this->user->userHaveApp($user_email, $idApp)) {
+            //
+            //$respuesta  = $this->download->getAverageUserSession($idApp); opcion 1 analiza todas las tablas menos optima
+            //Opcion 2 mas optima
+            if ($initialDate == null || $finalDate == null)
+            {
+                $respuesta = $this->appstatistics->getAverageUserSession($idApp);
+                  $this->response(['status' => true, 'message' => "Success", "result" => $respuesta], REST_Controller::HTTP_OK);
+            }
+            else
+            if ($initialDate != null && $finalDate != null) {
+                $respuesta = $this->appstatistics->getAverageUserSession($idApp, $initialDate, $finalDate);
+                //$this->prepareAndResponse("200", "Success", array("appRegistred" => "true", "result" => $respuesta));
+                 $this->response(['status' => true, 'message' => "Success", "result" => $respuesta], REST_Controller::HTTP_OK);
+            } else
+            {
+                 $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
+            } 
+            //$this->prepareAndResponse("201", "One of the dates have some problems", array(""));
+        }else {
+            //$this->prepareAndResponse("201", "The user doesn't have this app registered", array(""));
+            $this->response(['status' => FALSE, 'message' => "The user doesn't have this app registered", "result" => array()], REST_Controller::HTTP_CONFLICT);
         }
     }
 
@@ -99,21 +288,41 @@ class Statistic extends EthRESTController {
         $segmento = $this->uri->segment(5);
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
+                case "usersessions":
+                    $this->averageUserSession();
+                    break;
                 case "newusers":
                     //tener en cuenta  SO
-                    if ($segmento === "os") {
-                        
-                    } else {
-                        $this->newUsers();
+                    switch ($segmento) {
+                        case "os":
+                            $this->getNewUsersBySO();
+                            break;
+                        case "osdata":
+                            $this->getNewUsersDataBySO();
+                            break;
+                        default :
+                            $this->newUsers();
                     }
                     break;
                 case "users":
                     $this->users();
                     break;
                 case "sessions":
-                    //TODO tener en cuenta
-                    //idioma, OS, MB
-                    $this->sessions();
+                    switch ($segmento) {
+                        case "language":
+                            $this->getSessionsByLanguage();
+                            break;
+                        case "os":
+                            $this->getSessionsByOS();
+                            break;
+                        case "mb":
+                            $this->getSessionsByMB();
+                            break;
+                        default :
+                            $this->sessions();
+                            break;
+                    }
+
                     break;
                 case "screenviews":
                     $this->screenviews();
@@ -134,8 +343,21 @@ class Statistic extends EthRESTController {
                     $this->getUserInteraction();
                     break;
                 case "activeusers":
+                    switch ($segmento) {
+                        case "language":
+                            $this->getActiveUsersDataByLang();
+                            break;
+                        case "os":
+                            $this->getActiveUsersDataByOS();
+                            break;
+                        case "mb":
+                            $this->getActiveUsersDataByMB();
+                            break;
+                        default :
+                            $this->getActiveUsers();
+                    }
                     //tener en cuenta  OS; MB, Lang
-                    $this->getActiveUsers();
+
                     break;
                 case "sampledata":
                     $this->getGeneralSampleData();
@@ -254,21 +476,21 @@ class Statistic extends EthRESTController {
     /**
      * Obtiene los tipos de los evnetos registrados en la app.
      */
-    private function eventTypes(){
-        $this->load->model(ETHVERSION."Eventstatistics","evtStats");
+    private function eventTypes() {
+        $this->load->model(ETHVERSION . "Eventstatistics", "evtStats");
         $this->loadData($this->evtStats);
-        if($this->validateData($this->useremail, $this->idApp )){
-             $result =  $this->evtStats->getTypes($this->idApp, $this->initialDate, $this->finalDate);
-             $titles = array("Types", "# Events");
-             //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
-             $this->response([
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->evtStats->getTypes($this->idApp, $this->initialDate, $this->finalDate);
+            $titles = array("Types", "# Events");
+            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
+            $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                 "titles" => $titles
+                "titles" => $titles
                     ], REST_Controller::HTTP_OK);
-        }else{
-           // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
+        } else {
+            // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
                 'status' => false,
                 'message' => "fail",
@@ -276,23 +498,24 @@ class Statistic extends EthRESTController {
                     ], REST_Controller::HTTP_CONFLICT);
         }
     }
-     /**
+
+    /**
      * Obtiene los nombres  de los evnetos registrados en la app.
      */
-    private function eventLogs(){
-        $this->load->model(ETHVERSION."Eventstatistics","evtStats");
+    private function eventLogs() {
+        $this->load->model(ETHVERSION . "Eventstatistics", "evtStats");
         $this->loadData($this->evtStats);
-        if($this->validateData($this->useremail, $this->idApp )){
-             $result =  $this->evtStats->getLogs($this->idApp, $this->initialDate, $this->finalDate);
-             $titles = array("Logs", "# Events");
+        if ($this->validateData($this->useremail, $this->idApp)) {
+            $result = $this->evtStats->getLogs($this->idApp, $this->initialDate, $this->finalDate);
+            $titles = array("Logs", "# Events");
             $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                 "titles" => $titles
+                "titles" => $titles
                     ], REST_Controller::HTTP_OK);
-        }else{
-           // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
+        } else {
+            // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
                 'status' => false,
                 'message' => "fail",
@@ -300,7 +523,7 @@ class Statistic extends EthRESTController {
                     ], REST_Controller::HTTP_CONFLICT);
         }
     }
-    
+
     /**
      *  Permite obtener la cantidad de eventos diarios basados en una categoria y un tipo respectivamente.
      */
@@ -858,16 +1081,16 @@ class Statistic extends EthRESTController {
                     ], REST_Controller::HTTP_CONFLICT);
         }
     }
-    
+
     /**
-   * Valida que los datos del usuario sean correctos
-   * @param type $email, correo del usuario
-   * @param type $idApp, id de la aplicacion registrada
-   * @return boolean confirmacion de que el usuario y la app son correctos.
-   */
-    private function validateData($email, $idApp){
-            $this->load->model(ETHVERSION."user");		
-            return $this->user->userHaveApp($email, $idApp);
+     * Valida que los datos del usuario sean correctos
+     * @param type $email, correo del usuario
+     * @param type $idApp, id de la aplicacion registrada
+     * @return boolean confirmacion de que el usuario y la app son correctos.
+     */
+    private function validateData($email, $idApp) {
+        $this->load->model(ETHVERSION . "user");
+        return $this->user->userHaveApp($email, $idApp);
     }
 
 }

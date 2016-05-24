@@ -42,9 +42,19 @@ class Apps extends EthRESTController {
         if ($this->application->appExists($id_app)) {
             $url = $this->application->isPlatform($id_app, $platform);
             //$this->prepareAndResponse("200", "Success", array("result" => "$url"));
+            $this->response([
+                'status' => TRUE,
+                'response' => array('message' => "success",
+                    "result" => "$url")
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             $url = "none";
             //$this->prepareAndResponse("200", "Failed", array("result" => "$url"));
+            $this->response([
+                'status' => TRUE,
+                'response' => array('message' => "success",
+                    "result" => "$url")
+                    ], REST_Controller::HTTP_CONFLICT);
         }
     }
 
@@ -157,7 +167,7 @@ class Apps extends EthRESTController {
                         ], REST_Controller::HTTP_BAD_REQUEST);
             }
         } else {
-            echo $idApp . "asdasd";
+           // echo $idApp . "asdasd";
 
             $this->response([
                 'status' => FALSE,

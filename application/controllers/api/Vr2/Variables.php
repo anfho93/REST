@@ -140,12 +140,44 @@ class Variables extends REST_Controller {
                 case "ab":
                     $this->registerABVar();
                     break;
+                
                 default:
                     $this->registerVar();
                     break;
             }
         } else {
             $this->registerVar();
+        }
+    } 
+    
+     /**
+    * Funcion que permite realizar el registro de una aplicacion.
+    * esta funcion recibe los elementos via post o get en base64, son decodificados.
+    * @param string base64, $name_app nombre de la aplicacion,enviado como parametro via POST o GET
+    * @param string base64, $descripcion descripcion de la aplicacion,enviado como parametro via POST o GET
+    * @param string base64, $type tipo de la aplicacion,enviado como parametro via POST o GET
+    * @param string base64, $user_email correo electronico de quien registra la aplicacion, enviado como parametro via POST o GET
+    * @param string base64, $platforms nombre de la aplicacion,enviado como parametro via POST o GET
+    *
+    * @return void | Json , respuesta del servicio wen.
+    *
+    */
+    private function analiticVariable(){
+        
+        $this->load->model(ETHVERSION.'statevariable', "statevariable");        
+        $name_variable = $this->put('name');
+        $value = $this->put('value');
+        $date = time();
+        $id_download = $this->put('idDownload');
+        $id_app = $this->put('idApp');
+        //nuevo elemento id de la session
+        $session = $this->put('idSession');
+        if($this->verifySession($id_download,$id_app,$session)){
+            //echo "entre";
+            $this->statevariable->createVariable($id_download, $id_app, $name_variable, $value);
+        }else{
+            //echo "la session no pudo ser verificada";
+             $this->response(['status' => false, 'message' => "Session not verified", "Variable Updated" => "false"], REST_Controller::HTTP_FORBIDDEN);
         }
     }
 
@@ -154,6 +186,9 @@ class Variables extends REST_Controller {
             switch ($this->_pre_get()) {
                 case "ab":
                     $this->modifyABVariable();
+                    break;
+                case "analitic":
+                    $this->analiticVariable();
                     break;
                 case "abdef":
                     $this->modifyDefaultValues();
@@ -176,7 +211,7 @@ class Variables extends REST_Controller {
             if ($variable != null) {
                 $class = $variable->class;
                 if ($class == "A/B") {
-                    $cond = $this->getUrlData('cond', 'base64');
+                    $cond = $this->put('cond');
                 }
                 $result = $this->variable->modifyVariable($idApp, $idVar, $value);
                 if ($result != false) {
@@ -291,7 +326,6 @@ class Variables extends REST_Controller {
         $useremail = $this->delete('useremail');
         $id_variable = $this->delete('id_variable');
         if ($this->app->appExists($idApp) && $this->user->userHaveApp($useremail, $idApp)) {
-
             $result = $this->var->delete($id_variable, $idApp);
             if ($result) {
                 //$this->prepareAndResponse("200", "Success", array("Itemdeleted" => "true"));
@@ -314,16 +348,16 @@ class Variables extends REST_Controller {
     public function getABVariableValues() {
         $this->load->model(ETHVERSION . "download", "download");
         //TODO se debe verificar la sessión para esto.    
-        $idapp = $this->getUrlData('idApp', 'base64');
-        $idDownload = $this->getUrlData('idDownload', 'base64');
-        $idDevice = $this->getUrlData('idDevice', 'base64');
-        $model = $this->getUrlData('model', 'base64');
-        $name = $this->getUrlData('name', 'base64');
-        $platformName = $this->getUrlData('platformName', 'base64');
-        $platformVersion = $this->getUrlData('platformVersion', 'base64');
+        $idapp = $this->get('idApp');
+        $idDownload = $this->get('idDownload');
+        $idDevice = $this->get('idDevice');
+        $model = $this->get('model');
+        $name = $this->get('name');
+        $platformName = $this->get('platformName');
+        $platformVersion = $this->get('platformVersion');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $idApp = $this->getUrlData('idApp', 'base64');
-        $additionalInfo = $this->getUrlData('additionalInfo', 'base64');
+        $idApp = $this->get('idApp');
+        $additionalInfo = $this->get('additionalInfo');
 
         if ($platformName == '' || $platformName == null) {
             $platformName = "<unknown>";
@@ -354,7 +388,8 @@ class Variables extends REST_Controller {
         $variables = $this->variable->getVariables($idapp, true);
         $var = $this->processDownload($dataDownload, $variables);
 
-        $this->prepareAndResponse("200", "Success", array("success" => "true", "vars" => $var));
+       // $this->prepareAndResponse("200", "Success", array("success" => "true", "vars" => $var));
+         $this->response(['status' => TRUE, "success" => "true", "vars" => $var], REST_Controller::HTTP_BAD_REQUEST);
     }
 
     private function validateModule($factor1, $factor2, $expectedValue) {
