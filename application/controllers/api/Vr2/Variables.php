@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //require APPPATH . '/libraries/REST_Controller.php';
 require 'EthRESTController.php';
 
-class Variables extends REST_Controller {
+class Variables extends EthRESTController {
 
     public function __construct() {
         parent::__construct();
@@ -46,8 +46,73 @@ class Variables extends REST_Controller {
                     break;
             }
         } else {
-            
+            $this->getVariables();
         }
+    }
+
+    /**
+     * Funcion principal del servicio, aqui se se reciben los parametros via peticion http.
+     * @param string $idapp en base64, identificador de la aplicacion.
+     * @param string $idDownload en base64, identificador de la descarga.
+     * @param string $versionEthAppsSystem en base64, Numero de la version de la API
+     * @param string $idVersion en base64, versionn de la aplicacion que obtiene las variables.
+     * @param string $varName en base64, nombre de la variable a obtener.
+     * @param string $withDetails en base64, obtiene la variable con detalles.
+     * @return json string|, respuesta con las variables o el mensaje de error.
+     *
+     */
+    private function getVariables() {
+        $idApp = $this->getUrlData('idapp', 'base64');
+        $idDownload = $this->getUrlData('iddownload', 'base64');
+        //$idSession = $this->getUrlData('idSession','base64');
+        $versionEthAppsSystem = $this->getUrlData('versionEthAppsSystem', 'base64');
+        $idVersion = $this->getUrlData('idversion', 'base64');
+        $varName = $this->getUrlData('varname', 'base64');
+        $withDetails = $this->getUrlData('details', 'base64');
+        $abvars = null;
+        //if($this->validateDataAndApp($idApp)) {
+        //if($this->verifySession($idDownload,$idApp, $idSession)){
+
+        $this->load->model(ETHVERSION . 'variable');
+        $arrVars = array();
+
+        //If the attribute $varName is empty, it's because the user is trying to 
+        //get all the variables for this game
+        if ($varName == "") {
+            $arrVars = $this->variable->getVariables($idApp, $withDetails);
+        } else {
+            $arrVars = $this->variable->getVariable($idApp, $varName);
+            if ($arrVars != null && $arrVars["class"] == "A/B") {
+                $abvars = $this->variable->getABVariable($arrVars["id_variable"]);
+            }
+        }
+
+        if (count($arrVars) == 0) {
+            if ($varName == "") {
+                $this->prepareAndResponse("201", "This app doesn't have variables");
+            } else {
+                $this->prepareAndResponse("201", "The variable doesn't exists");
+            }
+        } else {
+            $specificBehaviourPath = APPPATH . "controllers/apps/" . $idApp;
+
+            if (file_exists($specificBehaviourPath)) {
+                $this->loadController("apps/" . $idApp . "/appSpecificBehaviour", "appSpecificBehaviour");
+                $arrVars = $this->appSpecificBehaviour->convertVariables($idApp, $idDownload, $versionEthAppsSystem, $idVersion, $arrVars);
+            }
+
+            $arrResponseVars = array();
+            $arrResponseVars["vars"] = $arrVars;
+            /* if($abvars!=null)
+              {
+              $arrResponseVars["varcond"] = $abvars;
+              } */
+            $this->prepareAndResponse("200", "Success", $arrResponseVars);
+        }
+        //}
+        //else{
+        //	$this->prepareAndResponse("501","no autorizado",array());
+        //}
     }
 
     /**
@@ -55,12 +120,14 @@ class Variables extends REST_Controller {
      * esta respuesta la indica en formato JSON
      */
     private function getData() {
-        $idApp = $this->get('idApp');
-        $versionEthAppsSystem = $this->get('versionEthAppsSystem');
-        $idVersion = $this->get('idVersion');
-        $varName = $this->get('varName');
+        //print_r($this->get());
+        $idApp = $this->get('idapp');
+        //$versionEthAppsSystem = $this->get('versionEthAppsSystem');
+        //$idVersion = $this->get('idversion');
+        $varName = $this->get('varname');
         $arrVars = $this->variable->getVariable($idApp, $varName);
-        if (!empty($arrVars) && $arrVars["class"] == "A/B") {
+        //print_r($arrVars);
+        if (!empty($arrVars) && $arrVars["class"] == "AB") {
             $abvars = $this->variable->getABVariable($arrVars["id_variable"]);
             //$this->prepareAndResponse("200", "Success", array("cond" => $abvars));            
             $this->response(['status' => TRUE, "message" => "Success", 'cond' => $abvars], REST_Controller::HTTP_OK);
@@ -71,7 +138,7 @@ class Variables extends REST_Controller {
     }
 
     private function registerVar() {
-        $idApp = $this->post('idApp');
+        $idApp = $this->post('idapp');
         $versionEthAppsSystem = $this->post('versionEthAppsSystem');
         $useremail = $this->post('useremail');
         $class = $this->post('class');
@@ -84,7 +151,7 @@ class Variables extends REST_Controller {
                 $class = "NORMAL";
                 break;
             case "1":
-                $class = "A/B";
+                $class = "AB";
                 $cond = $this->post('cond', 'base64');
                 break;
             case "2":
@@ -111,14 +178,15 @@ class Variables extends REST_Controller {
 
     private function registerABVar() {
         //$this->load->model(ETHVERSION . 'variable');
+        print_r($this->post());
         $versionEthAppsSystem = $this->post('versionEthAppsSystem');
-        $idVariable = $this->post('idVar');
-        $condName = $this->post('varName');
+        $idVariable = $this->post('idvar');
+        $condName = $this->post('varname');
         $useremail = $this->post('useremail');
         $condsJSON = json_decode($this->post('conditions'));
         $valuesJSON = json_decode($this->post('values'));
-        $conds = $this->post('conditions', 'base64');
-        $values = $this->post('values', 'base64');
+        $conds = $this->post('conditions');
+        $values = $this->post('values');
         if ($this->validate($useremail, $condName, $idVariable) && $condsJSON != null && $valuesJSON != null) {
             $result = $this->variable->registerCond($idVariable, $conds, $values, $condName);
             if ($result == false) {
@@ -138,9 +206,10 @@ class Variables extends REST_Controller {
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
                 case "ab":
+                    
                     $this->registerABVar();
                     break;
-                
+
                 default:
                     $this->registerVar();
                     break;
@@ -148,23 +217,23 @@ class Variables extends REST_Controller {
         } else {
             $this->registerVar();
         }
-    } 
-    
-     /**
-    * Funcion que permite realizar el registro de una aplicacion.
-    * esta funcion recibe los elementos via post o get en base64, son decodificados.
-    * @param string base64, $name_app nombre de la aplicacion,enviado como parametro via POST o GET
-    * @param string base64, $descripcion descripcion de la aplicacion,enviado como parametro via POST o GET
-    * @param string base64, $type tipo de la aplicacion,enviado como parametro via POST o GET
-    * @param string base64, $user_email correo electronico de quien registra la aplicacion, enviado como parametro via POST o GET
-    * @param string base64, $platforms nombre de la aplicacion,enviado como parametro via POST o GET
-    *
-    * @return void | Json , respuesta del servicio wen.
-    *
-    */
-    private function analiticVariable(){
-        
-        $this->load->model(ETHVERSION.'statevariable', "statevariable");        
+    }
+
+    /**
+     * Funcion que permite realizar el registro de una aplicacion.
+     * esta funcion recibe los elementos via post o get en base64, son decodificados.
+     * @param string base64, $name_app nombre de la aplicacion,enviado como parametro via POST o GET
+     * @param string base64, $descripcion descripcion de la aplicacion,enviado como parametro via POST o GET
+     * @param string base64, $type tipo de la aplicacion,enviado como parametro via POST o GET
+     * @param string base64, $user_email correo electronico de quien registra la aplicacion, enviado como parametro via POST o GET
+     * @param string base64, $platforms nombre de la aplicacion,enviado como parametro via POST o GET
+     *
+     * @return void | Json , respuesta del servicio wen.
+     *
+     */
+    private function analiticVariable() {
+
+        $this->load->model(ETHVERSION . 'statevariable', "statevariable");
         $name_variable = $this->put('name');
         $value = $this->put('value');
         $date = time();
@@ -172,12 +241,12 @@ class Variables extends REST_Controller {
         $id_app = $this->put('idApp');
         //nuevo elemento id de la session
         $session = $this->put('idSession');
-        if($this->verifySession($id_download,$id_app,$session)){
+        if ($this->verifySession($id_download, $id_app, $session)) {
             //echo "entre";
             $this->statevariable->createVariable($id_download, $id_app, $name_variable, $value);
-        }else{
+        } else {
             //echo "la session no pudo ser verificada";
-             $this->response(['status' => false, 'message' => "Session not verified", "Variable Updated" => "false"], REST_Controller::HTTP_FORBIDDEN);
+            $this->response(['status' => false, 'message' => "Session not verified", "Variable Updated" => "false"], REST_Controller::HTTP_FORBIDDEN);
         }
     }
 
@@ -215,13 +284,12 @@ class Variables extends REST_Controller {
                 }
                 $result = $this->variable->modifyVariable($idApp, $idVar, $value);
                 if ($result != false) {
-                   // $this->prepareAndResponse("200", "Success", array("Variable Updated" => "true"));
-                   $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "true"], REST_Controller::HTTP_ACCEPTED);
-                } else
-                {
+                    // $this->prepareAndResponse("200", "Success", array("Variable Updated" => "true"));
+                    $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "true"], REST_Controller::HTTP_ACCEPTED);
+                } else {
                     $this->response(['status' => FALSE, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
                 } // $this->prepareAndResponse("200", "The dataset doesn't match", array("Variable Updated" => "false"));
-            }else {
+            } else {
                 //$this->prepareAndResponse("200", "The dataset doesn't match", array("Variable Updated" => "false"));
                 $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
             }
@@ -236,8 +304,8 @@ class Variables extends REST_Controller {
      * por defecto.
      */
     public function modifyDefaultValues() {
-        $idVariable = $this->put('idVariable');
-        $idApp = $this->put('idApp');
+        $idVariable = $this->put('idvariable');
+        $idApp = $this->put('idapp');
         $value = $this->put('values');
         if ($this->variable->modifyVariable($idApp, $idVariable, $value)) {
             // $this->prepareAndResponse("200","Success",array("updated" => "true" ));            
@@ -255,17 +323,20 @@ class Variables extends REST_Controller {
     }
 
     private function modifyABVariable() {
-        $idApp = $this->put('idApp');
+        //print_r($this->put());
+        $idApp = $this->put('idapp');
         $versionEthAppsSystem = $this->put('versionEthAppsSystem');
         $useremail = $this->put('useremail');
-        $idabVar = $this->put('id_abvar');
-        $idVar = $this->put('id_var');
-        //if($this->app->appExists($idApp) && $this->user->userHaveApp($useremail, $idApp))//validar el usuario y el app
+        $idabVar = $this->put('idabvar');
+        $idVar = $this->put('idvar');
+        if($this->app->appExists($idApp) && $this->user->userHaveApp($useremail, $idApp))//validar el usuario y el app
         {
+            
             $variable = $this->variable->obtenerVariable($idVar);
+          
             if ($variable != null) {
                 $class = $variable->class;
-                if ($class == "A/B") {
+                if ($class == "AB") {
                     $conds = $this->put('conds');
                     $values = $this->put('values');
                     $result = $this->variable->modifyABVariable($idVar, $idabVar, $conds, $values);
@@ -273,15 +344,18 @@ class Variables extends REST_Controller {
                         // $this->prepareAndResponse("200", "Success", array("Variable Updated" => "true"));
                         $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "true"], REST_Controller::HTTP_ACCEPTED);
                     } else {
-                        $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "FALSE"], REST_Controller::HTTP_NOT_MODIFIED);
+                        //echo "1";
+                        $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "FALSE"], REST_Controller::HTTP_BAD_REQUEST);
                     } //$this->prepareAndResponse("200", "The dataset doesn't match", array("Variable Updated" => "false"));
                 } else {
+                    //echo "2";
                     // $this->prepareAndResponse("200", "Variable not AB", array("result" => "false"));
-                    $this->response(['status' => true, 'message' => "Variable not AB", "Variable Updated" => "FALSE"], REST_Controller::HTTP_NOT_MODIFIED);
+                    $this->response(['status' => true, 'message' => "Variable not AB", "Variable Updated" => "FALSE"], REST_Controller::HTTP_BAD_REQUEST);
                 }
             } else {
+               // echo "3";
                 //$this->prepareAndResponse("200", "The dataset doesn't match", array("Variable Updated" => "false"));
-                $this->response(['status' => true, 'message' => "The dataset doesn't match", "Variable Updated" => "FALSE"], REST_Controller::HTTP_NOT_MODIFIED);
+                $this->response(['status' => true, 'message' => "The dataset doesn't match", "Variable Updated" => "FALSE"], REST_Controller::HTTP_BAD_REQUEST);
             }
         }/* else{
           $this->prepareAndResponse("200","The dataset doesn't match",array("Variable Updated"=>"false1"));
@@ -306,14 +380,15 @@ class Variables extends REST_Controller {
      */
     private function deletecond() {
         //$this->load->model(ETHVERSION."Variable","variable");
-        $versionEthAppsSystem = $this->delete('versionEthAppsSystem');
-        $useremail = $this->delete('useremail');
-        $idabVar = $this->delete('id_abvar');
-        $idVar = $this->delete('id_var');
+        //print_r($this->query());
+        $versionEthAppsSystem = $this->query('versionEthAppsSystem');
+        $useremail = $this->query('useremail');
+        $idabVar = $this->query('idabvar');
+        $idVar = $this->query('idvar');
         $res = $this->variable->deleteABCond($idVar, $idabVar);
         if ($res == 1) {
             // $this->prepareAndResponse("200","Variable deleted",array("deleted"=>"true"));
-            $this->response(['status' => FALSE, 'message' => "Variable deleted"], REST_Controller::HTTP_OK);
+            $this->response(['status' => FALSE, 'message' => "Variable deleted"], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","The dataset doesn't match",array("deleted"=>"false"));            
             $this->response(['status' => FALSE, 'message' => "The dataset doesn't match"], REST_Controller::HTTP_BAD_REQUEST);
@@ -321,12 +396,13 @@ class Variables extends REST_Controller {
     }
 
     private function deleteVar() {
-        $idApp = $this->delete('idApp');
-        $versionEthAppsSystem = $this->delete('versionEthAppsSystem');
-        $useremail = $this->delete('useremail');
-        $id_variable = $this->delete('id_variable');
+        //print_r($this->query());
+        $idApp = $this->query('idapp');
+        $versionEthAppsSystem = $this->query('versionEthAppsSystem');
+        $useremail = $this->query('useremail');
+        $id_variable = $this->query('idvariable');
         if ($this->app->appExists($idApp) && $this->user->userHaveApp($useremail, $idApp)) {
-            $result = $this->var->delete($id_variable, $idApp);
+            $result = $this->variable->delete($id_variable, $idApp);
             if ($result) {
                 //$this->prepareAndResponse("200", "Success", array("Itemdeleted" => "true"));
                 $this->response(['status' => TRUE, 'message' => "Item deleted"], REST_Controller::HTTP_ACCEPTED);
@@ -348,16 +424,16 @@ class Variables extends REST_Controller {
     public function getABVariableValues() {
         $this->load->model(ETHVERSION . "download", "download");
         //TODO se debe verificar la sessión para esto.    
-        $idapp = $this->get('idApp');
-        $idDownload = $this->get('idDownload');
-        $idDevice = $this->get('idDevice');
+        $idapp = $this->get('idapp');
+        $idDownload = $this->get('iddownload');
+        $idDevice = $this->get('iddevice');
         $model = $this->get('model');
         $name = $this->get('name');
-        $platformName = $this->get('platformName');
-        $platformVersion = $this->get('platformVersion');
+        $platformName = $this->get('platformname');
+        $platformVersion = $this->get('platformversion');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $idApp = $this->get('idApp');
-        $additionalInfo = $this->get('additionalInfo');
+        $idApp = $this->get('idapp');
+        $additionalInfo = $this->get('additionalinfo');
 
         if ($platformName == '' || $platformName == null) {
             $platformName = "<unknown>";
@@ -388,8 +464,8 @@ class Variables extends REST_Controller {
         $variables = $this->variable->getVariables($idapp, true);
         $var = $this->processDownload($dataDownload, $variables);
 
-       // $this->prepareAndResponse("200", "Success", array("success" => "true", "vars" => $var));
-         $this->response(['status' => TRUE, "success" => "true", "vars" => $var], REST_Controller::HTTP_BAD_REQUEST);
+        // $this->prepareAndResponse("200", "Success", array("success" => "true", "vars" => $var));
+        $this->response(['status' => TRUE, "success" => "true", "vars" => $var], REST_Controller::HTTP_BAD_REQUEST);
     }
 
     private function validateModule($factor1, $factor2, $expectedValue) {
@@ -508,6 +584,17 @@ class Variables extends REST_Controller {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Funcion que valida si un usuario tiene una variable indicada
+     * @param String $useremail correo electronico del dueño de la variable
+     * @param String $varName nombre de la variable
+     * @param String $idVariable identificador de la variable 
+     * @return boolean si los datos coinciden con los de la base de datos
+     */
+    public function validate($useremail, $varName, $idVariable) {
+        return true;
     }
 
 }

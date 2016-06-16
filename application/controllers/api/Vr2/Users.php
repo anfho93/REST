@@ -18,7 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //require APPPATH . '/libraries/REST_Controller.php';
 require 'EthRESTController.php';
 
-class User extends REST_Controller{
+class Users extends EthRESTController{
 
     
     
@@ -70,7 +70,7 @@ class User extends REST_Controller{
     *
     */     
     private function login(){
-        $userName = $this->post('userName');
+        $userName = $this->post('username');
 	$password = $this->post('password');
         $this->load->model(ETHVERSION."User","usuario");
         $result =$this->usuario->login($userName, $password);        
@@ -91,8 +91,10 @@ class User extends REST_Controller{
         } 
     }
     
-    private function registerUser(){        
-        $email = $this->post('userName');
+    private function registerUser(){      
+        //print_r($this->post());
+        $email = $this->post('useremail');
+        
         $userCompanyName =$this->post('companyname');
         $username = $this->post('username');
         $userLastName = $this->post('userlastname');

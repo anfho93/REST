@@ -124,7 +124,8 @@ class Segments extends EthRESTController {
     }
 
     public function index_post() {
-        //$this->load->model(ETHVERSION.'segment', "segment");        
+        //$this->load->model(ETHVERSION.'segment', "segment");      
+        print_r($this->post());
         $user_email = $this->post('useremail');
         $name = $this->post('name');
         $title = $this->post('title');
@@ -136,7 +137,7 @@ class Segments extends EthRESTController {
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result
-                    ], REST_Controller::HTTP_BAD_REQUEST);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             $this->response([
                 'status' => FALSE,
@@ -185,6 +186,7 @@ class Segments extends EthRESTController {
      */
     private function add($user_email, $category, $name, $title, $value) {
         $result = $this->segment->add($user_email, $category, $name, $title, $value);
+       // print_r($result);
         return $result;
     }
 

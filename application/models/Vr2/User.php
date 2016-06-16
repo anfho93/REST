@@ -222,7 +222,8 @@ class User extends CI_Model {
     * @return boolean , el usuario existe o no.
     */  
     function userExists($email) {        
-        $result = $this->db->get_where( $this->tablename, array('user_email' => $email)  );
+        $result = $this->db->get_where($this->tablename, array('user_email' => $email));
+        //print_r($result);
         if($result->num_rows()>0){
            return true;
         }else{

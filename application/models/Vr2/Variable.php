@@ -119,8 +119,8 @@ class Variable extends CI_Model {
     function obtenerVariable($id) {
         $objResponse = null;
         $result = $this->db->get_where($this->tablename, array("id_variable" => $id));
-        // print_r($this->tablename." ".$idApp . " - ".$id);
-        if ($result->num_rows > 0) {
+        //  print_r($result->first_row());
+        if ($result->first_row()!=null) {
             $objResponse = $result->first_row();
         }
         return $objResponse;
@@ -135,20 +135,20 @@ class Variable extends CI_Model {
      * @return boolean confirmacion si se pudo actualizar o no los datos.
      */
     function modifyABVariable($idVar, $idABVar, $cond, $values) {
-        if($this->isJson($cond) && $this->isJson($values))
-        {
+        if ($this->isJson($cond) && $this->isJson($values)) {
             $data = array("conditions" => $cond, "values" => $values);
             $result = $this->db->update($this->tablenameab, $data, array('id_abvariable' => $idABVar, "id_variable" => $idVar));
             return $result;
-        }else{
-            return false;        
+        } else {
+            return false;
         }
-        
     }
 
     private function isJson($string) {
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
+        //if (is_string($string)) {
+            json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE);
+        //}return false;
     }
 
     /**
@@ -187,13 +187,12 @@ class Variable extends CI_Model {
      * @return boolean respuesta si la variable fue o no actualizada
      */
     function modifyVariable($idApp, $id, $value, $icon = "none") {
-        
-        if($this->isJson($value))
-        {
+
+        if ($this->isJson($value)) {
             $data = array(
-            'value' => $value,
-            'icon' => $icon
-        );
+                'value' => $value,
+                'icon' => $icon
+            );
             $this->db->where('id_variable', $id);
             return $this->db->update($this->tablename, $data);
         }

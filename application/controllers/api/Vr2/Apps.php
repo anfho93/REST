@@ -16,7 +16,6 @@ class Apps extends EthRESTController {
 
     public function __construct() {
         parent::__construct();
-
         $methodname = strtolower("index_" . $this->request->method);
         if (method_exists($this, $methodname)) {
             $this->$methodname();
@@ -78,12 +77,12 @@ class Apps extends EthRESTController {
     }
 
     public function index_post() {
-
+       // print_r($this->post());
         $this->load->model(ETHVERSION . 'App', "application");
-        $name_app = ($this->post('name_app'));
+        $name_app = ($this->post('appname'));
         $description = ($this->post('description'));
-        $type = ($this->post('inputType'));
-        $user_email = ($this->post('usermail'));
+        $type = ($this->post('inputtype'));
+        $user_email = ($this->post('useremail'));
         $platforms = ($this->post('platforms'));
 
         if ($this->canRegisterApp($user_email)) {
@@ -109,13 +108,13 @@ class Apps extends EthRESTController {
 
     //falta desactivar app    
     public function index_put() {
-
+        //print_r($this->put());
         $this->load->model(ETHVERSION . 'App', "application");
-        $idApp = ($this->post('idApp'));
-        $name_app = ($this->put('name_app'));
+        $idApp = ($this->post('idapp'));
+        $name_app = ($this->put('appname'));
         $description = ($this->put('description'));
-        $type = ($this->put('inputType'));
-        $user_email = ($this->put('usermail'));
+        $type = ($this->put('inputtype'));
+        $user_email = ($this->put('useremail'));
         $platforms = ($this->put('platforms'));
 
         if ($this->canRegisterApp($user_email)) {
@@ -140,9 +139,11 @@ class Apps extends EthRESTController {
     }
 
     public function index_delete() {
-        $idApp = ($this->query('idApp'));
-        $email = ($this->query('usermail'));
-        $status = ($this->query('active'));
+        
+        
+        $idApp = ($this->query('idapp'));
+        $email = ($this->query('useremail'));
+        $status = 0;
         $appname = ($this->query('appname'));
         $this->load->model(ETHVERSION . "App", "app");
         $this->load->model(ETHVERSION . "User", "user");

@@ -28,6 +28,7 @@ class Segment extends CI_Model {
     public function add($user_email, $category, $name, $title, $value){
         if($this->isJson($value) )
         {
+            echo "entre";
             $value = $this->processSegmentValue($value);
             if($value != null){
                  $array = array("nombre" => $name,

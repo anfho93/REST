@@ -254,10 +254,10 @@ class Statistic extends EthRESTController {
         $this->load->model(ETHVERSION . "download");
         $this->load->model(ETHVERSION . "user");
         $this->load->model(ETHVERSION . "appstatistics");
-        $user_email = $this->getUrlData('user_email', 'base64');
-        $idApp = $this->getUrlData('idApp', 'base64');
-        $initialDate = $this->getUrlData('initialDate', 'base64');
-        $finalDate = $this->getUrlData('finalDate', 'base64');
+        $user_email = $this->get('useremail');
+        $idApp = $this->get('idapp');
+        $initialDate = $this->get('initialdate');
+        $finalDate = $this->get('finaldate');
         
         if ($this->user->userHaveApp($user_email, $idApp)) {
             //
