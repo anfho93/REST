@@ -63,7 +63,9 @@
         define('DATAROUTE', '/var/www/html/Database/');
 	define('TIEMPOINACTIVIDAD', 3600);//una hora tiempo maximo inactividad
 	ini_set('session.gc-maxlifetime', 3600);
-/*
+        //$cadena = "http://ethgame.com/BackEndDevelopment/Web/writeSession";
+        define("RUTASESION", "http://localhost/REST/writeSession");
+/*  
  *---------------------------------------------------------------
  * ERROR REPORTING
  *---------------------------------------------------------------

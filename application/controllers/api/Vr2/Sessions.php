@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //require APPPATH . '/libraries/REST_Controller.php';
 require 'EthRESTController.php';
 
-class Session extends EthRESTController {
+class Sessions extends EthRESTController {
 
     public function __construct() {
         parent::__construct();
@@ -70,10 +70,10 @@ class Session extends EthRESTController {
     }
 
     public function index_post() {
-        $idApp = $this->post('idApp');
-        $idDownload = $this->post('idDownload');
+        $idApp = $this->post('idapp');
+        $idDownload = $this->post('iddownload');
         $versionEthAppsSystem = $this->post('versionEthAppsSystem');
-        $idVersion = $this->post('idVersion');
+        $idVersion = $this->post('idversion');
         
         if ($this->validateDataAndApp($idApp)) {
             $this->load->model(ETHVERSION . 'session');
@@ -81,13 +81,13 @@ class Session extends EthRESTController {
             if ($lastIDSession != false) {
                 $lastIDSession = str_replace(".", "-", $lastIDSession);
                 $result = $this->iniciarSesion($lastIDSession);
-                $this->loadController(VERSION_PATH . "/reportLog", 'reportLogVersion');
-                $this->reportLogVersion->report($versionEthAppsSystem, $idVersion, $idDownload, $idApp, $lastIDSession, 'App Session Created');
+                //$this->loadController(VERSION_PATH . "/reportLog", 'reportLogVersion');
+                //$this->reportLogVersion->report($versionEthAppsSystem, $idVersion, $idDownload, $idApp, $lastIDSession, 'App Session Created');
                 //$this->prepareAndResponse("200", "Success", array("idSession" => "" . $lastIDSession, "el" => session_id()));
                 $this->response([
                     'status' => TRUE,
                     'message' => "Success",
-                    array("idSession" => "" . $lastIDSession, "el" => session_id())
+                    "idsession" => "" . $lastIDSession, "el" => session_id()
                         ], REST_Controller::HTTP_ACCEPTED);
             } else {
                 $this->response([

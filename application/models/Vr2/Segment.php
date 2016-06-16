@@ -28,7 +28,7 @@ class Segment extends CI_Model {
     public function add($user_email, $category, $name, $title, $value){
         if($this->isJson($value) )
         {
-            echo "entre";
+        
             $value = $this->processSegmentValue($value);
             if($value != null){
                  $array = array("nombre" => $name,
@@ -37,6 +37,7 @@ class Segment extends CI_Model {
                         "titulo" => $title,
                         "categoria" => $category);
                     $result = $this->db->insert("ethas_segment", $array);
+                    
                     if ($this->db->_error_number()) {//no existe email
                         return false;
                     }

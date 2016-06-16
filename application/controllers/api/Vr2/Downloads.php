@@ -11,17 +11,13 @@ class Downloads extends EthRESTController {
     public function __construct() {
         parent::__construct();
         $methodname = strtolower("index_" . $this->request->method);
+        $this->load->model(ETHVERSION . 'Download', "download");
         if (method_exists($this, $methodname)) {
             $this->$methodname();
         }
     }
 
-    private function _pre_get() {
-        $segmento = $this->uri->segment(4);
-        return $segmento;
-    }
-
-    public function index_get() {        
+       public function index_post() {        
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
                 case "id" : 
@@ -41,16 +37,15 @@ class Downloads extends EthRESTController {
     
     
     private function getIdDownload(){
-       // echo "entre";
-        $idDevice = $this->get('idDevice');
-        $model = $this->get('model');
-        $name = $this->get('name');
-        $platformName = $this->get('platformName');
-        $platformVersion = $this->get('platformVersion');
+        $idDevice = $this->post('iddevice');
+        $model = $this->post('model');
+        $name = $this->post('name');
+        $platformName = $this->post('platformname');
+        $platformVersion = $this->post('platformversion');
         $ip =$_SERVER['REMOTE_ADDR'];
-        $idApp = $this->get('idApp');
-        $additionalInfo = $this->get('additionalInfo');
-        $versionEthAppsSystem = $this->get('versionEthAppsSystem');
+        $idApp = $this->post('idapp');
+        $additionalInfo = $this->post('additionalinfo');
+        $versionEthAppsSystem = $this->post('versionEthAppsSystem');
         $appversion = "none";        
         if($this->validateDataAndApp($idApp)) {
             $this->load->model(ETHVERSION.'Download');
@@ -68,29 +63,7 @@ class Downloads extends EthRESTController {
         }
     }
     
-    private function validateDataAndApp($idApp) {
-        if($idApp != "") {            
-            $this->load->model(ETHVERSION.'app');
-            if(!$this->app->appExists($idApp)){
-                 $this->response([
-                    'status' => TRUE,
-                    'message' => "App not present in database"
-                        ], REST_Controller::HTTP_BAD_REQUEST);
-            }           
-            else{
-                return true;               
-            }
-        }
-        else{
-             $this->response([
-                    'status' => TRUE,
-                    'message' => "Bad Request"
-                        ], REST_Controller::HTTP_BAD_REQUEST);              
-        }
-        
-        return false;            
-    }
-    
+  
     
 
 }

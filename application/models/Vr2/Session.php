@@ -68,7 +68,8 @@ class Session extends CI_Model {
        // print_r($idApp);
         $ch = curl_init(); 
         $ip = $_SERVER['REMOTE_ADDR'];
-	$url = "http://ethgame.com/BackEndDevelopment/Web/writeSession?ip=$ip&data=$row";
+      
+	$url = RUTASESION."?ip=$ip&data=$row";
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 	curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);

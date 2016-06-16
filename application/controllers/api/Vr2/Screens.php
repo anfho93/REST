@@ -188,12 +188,12 @@ class Screens extends EthRESTController {
      *
      */
     public function index_post() {
-
-        $idApp = $this->post('idApp');
-        $idDownload = $this->post('idDownload');
+        print_r($this->post());
+        $idApp = $this->post('idapp');
+        $idDownload = $this->post('iddownload');
         $versionEthAppsSystem = $this->post('versionEthAppsSystem');
-        $idVersion = $this->post('idVersion');
-        $idSession = $this->post('idSession');
+        $idVersion = $this->post('idversion');
+        $idSession = $this->post('idsession');
         $screen = $this->post('screen');
 
         $screen = str_replace("|", "", $screen);

@@ -113,7 +113,7 @@ class Segments extends EthRESTController {
      * Permite obtener los segmentos de un usuario
      */
     private function getUserSegments() {
-        $user_email = $this->getUrlData('useremail', 'base64');
+        $user_email = $this->get('useremail');
         $result = $this->segment->getSegments($user_email);
         $this->response([
             'status' => TRUE,
@@ -125,7 +125,7 @@ class Segments extends EthRESTController {
 
     public function index_post() {
         //$this->load->model(ETHVERSION.'segment', "segment");      
-        print_r($this->post());
+       //print_r($this->post());
         $user_email = $this->post('useremail');
         $name = $this->post('name');
         $title = $this->post('title');
@@ -169,7 +169,7 @@ class Segments extends EthRESTController {
                 'status' => FALSE,
                 'message' => "error"
                     ], REST_Controller::HTTP_BAD_REQUEST);
-            ;
+            
         }
     }
 

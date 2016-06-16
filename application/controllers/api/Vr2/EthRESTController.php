@@ -86,14 +86,22 @@ class EthRESTController extends REST_Controller {
         if ($idApp != "") {
             $this->load->model(ETHVERSION . 'app');
             if (!$this->app->appExists($idApp)) {
-                $this->prepareAndResponse("401", "App not present in database");
+                //$this->prepareAndResponse("401", "App not present in database");
+                  $this->response([
+            'status' => FALSE,
+            'message' => "App not present in database"
+                ], REST_Controller::HTTP_BAD_REQUEST);
             } else {
                 return true;
             }
         }
         //Si no llegaron los datos
         else {
-            $this->prepareAndResponse("400", "Bad Request");
+            //$this->prepareAndResponse("400", "Bad Request");
+            $this->response([
+            'status' => FALSE,
+            'message' => "El app no existe"
+                ], REST_Controller::HTTP_BAD_REQUEST);
         }
 
         return false;
@@ -110,6 +118,37 @@ class EthRESTController extends REST_Controller {
         return $segmento;
     }
     
-    
+     
+    /**
+    * Carga un controller en la ruta indicada,. etos controladores hacen referencia 
+    * a los servicios web en la carpeta ethAppsSystemVersions
+    * @param string $file_name  , ruta del archivo que contiene el controlador
+    * @param string $class_object  , nombre de la clase que contiene el controlador
+    * @return boolean, si pudo ser cargado o no
+    */
+    protected function loadController($file_name,$class_object = ""){
+
+        $object_name = $class_object;
+
+        if($class_object=="") 
+        {
+            $class_object = ucfirst($file_name);
+            $object_name = $file_name;
+        }
+        
+        $CI = & get_instance();
+      
+        $file_path = APPPATH.'controllers/'.$file_name.'.php';
+        
+        if(file_exists($file_path)){
+            require($file_path);          
+            $CI->$object_name = new $class_object();
+            return true;
+        }
+        else{
+            echo "NON ".$file_path;
+            return false;            
+        }
+    }
 
 }
