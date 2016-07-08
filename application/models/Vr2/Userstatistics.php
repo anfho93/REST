@@ -183,8 +183,8 @@ class Userstatistics extends BaseStatistics {
     }
     
     
-
-    /**
+    
+     /**
      * Permite identificar los usuarios que iniciaron sesion un dia determinado despues de 
      * descargar la aplicacion.
      * @param String $idApp Nombre de la aplicacion.
@@ -195,6 +195,31 @@ class Userstatistics extends BaseStatistics {
      * como parametro.
      */
     public function getUserRetention($idapp, $initialDate, $finalDate, $rangeOfRetention){
+       @list($d1, $m1, $y1) = explode( $this->separador,$initialDate,3);
+       @list($d2, $m2, $y2) = explode( $this->separador,$finalDate,3);
+       $c=$this->getConector($y1, $y2);
+       $this->db->select("year ,month,day, cant as downloads ");
+       $this->db->from("ethas_retention");
+       $this->db->where("idapp='$idapp' and daysofretention=$rangeOfRetention
+        and  ((year = $y1 and ( $m1 < month or ($m1=month and day >= $d1 and day <= 31 ) ))  $c 
+             (year = $y2 and ( $m2 > month or ($m2=month and day >= 01 and $d2 >= day ))))");       
+       $this->db->group_by("year ,month,day");
+       $this->db->order_by("year ,month,day");
+       $result = $this->db->get();
+       $titlearray = array("downloads");
+       return $this->prepareResultSet($titlearray, $initialDate, $finalDate, $result->result_array());     
+    }
+    /**
+     * Permite identificar los usuarios que iniciaron sesion un dia determinado despues de 
+     * descargar la aplicacion.
+     * @param String $idApp Nombre de la aplicacion.
+     * @param string $initialDate fecha inicial
+     * @param String $finalDate fecha final
+     * @param int $rangeOfRetention, dias a ser calculada la retencion de usuarios
+     * @return array conjunto de datos indexados por fecha desde el inicio hasta el final del rango ingresado
+     * como parametro.
+     */
+    private function _getUserRetention($idapp, $initialDate, $finalDate, $rangeOfRetention){
        @list($d1, $m1, $y1) = explode( $this->separador,$initialDate,3);
        @list($d2, $m2, $y2) = explode( $this->separador,$finalDate,3);
         $c=$this->getConector($y1, $y2);

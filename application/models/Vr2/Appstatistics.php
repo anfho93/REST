@@ -66,16 +66,16 @@ class Appstatistics extends BaseStatistics {
     public function getNewUsers($idApp, $initialDate, $finalDate){
        @list($d1, $m1, $y1) = explode( $this->separador,$initialDate,3);
        @list($d2, $m2, $y2) = explode( $this->separador,$finalDate,3);
-       $c=$this->getConector($y1, $y2);
-        $this->otherdb->select('year, month, day , count(distinct(iddevice)) as UsuariosNuevos ');
-        $this->otherdb->from('downloads');
-        $this->otherdb->where( "id_app='$idApp' and "
+        $c=$this->getConector($y1, $y2);
+        $this->db->select('year, month, day , count(distinct(iddevice)) as UsuariosNuevos ');
+        $this->db->from('ethas_downloads');
+        $this->db->where( "id_app='$idApp' and "
                                 . "((year = $y1 and ( $m1 < month or ($m1=month and day >= $d1 and day <= 31 ) ))  $c 
                              (year = $y2 and ( $m2 > month or ($m2=month and day >= 01 and $d2 >= day ))))
                                 ");
-        $this->addSegmentQuery($this->otherdb);
-        $this->otherdb->group_by('year, month, day ');
-        $result = $this->otherdb->get();
+        $this->addSegmentQuery($this->db);
+        $this->db->group_by('year, month, day ');
+        $result = $this->db->get();
    
         $titles = array("UsuariosNuevos");   
         $labels = $this->prepareResultSet($titles, $initialDate, $finalDate, $result->result_array());
@@ -92,9 +92,9 @@ class Appstatistics extends BaseStatistics {
      */
     function getTotalNewUsers($idApp,  $initialDate=null, $finalDate=null){
          if($initialDate==null || $finalDate==null){
-           $this->otherdb->select(' count(distinct iddevice) as usuarios ');
-           $this->otherdb->from("downloads");
-           $this->otherdb->where("id_app",$idApp);
+           $this->db->select(' count(distinct iddevice) as usuarios ');
+           $this->db->from("ethas_downloads");
+           $this->db->where("id_app",$idApp);
            $this->addSegmentQuery($this->otherdb);
           
         }else{
@@ -102,13 +102,13 @@ class Appstatistics extends BaseStatistics {
            @list($d2, $m2, $y2) = explode( $this->separador, $finalDate, 3);
            //muestra los usuarios activos por dia
            $c=$this->getConector($y1, $y2);
-           $this->otherdb->select(' count(id_download) as usuarios ');
-           $this->otherdb->from("downloads");
-           $this->otherdb->where("id_app",$idApp);
-           $this->otherdb->where("((downloads.year = $y1 and ( $m1 < downloads.month or ($m1=downloads.month and downloads.day >= $d1 and downloads.day <= 31 )))
+           $this->db->select(' count(id_download) as usuarios ');
+           $this->db->from("ethas_downloads as downloads");
+           $this->db->where("id_app",$idApp);
+           $this->db->where("((downloads.year = $y1 and ( $m1 < downloads.month or ($m1=downloads.month and downloads.day >= $d1 and downloads.day <= 31 )))
             $c 
             (downloads.year = $y2 and ( $m2 > downloads.month or ($m2=downloads.month and downloads.day >= 01 and $d2 >= downloads.day ))))");
-           $this->addSegmentQuery($this->otherdb);
+           $this->addSegmentQuery($this->db);
            
         }
         

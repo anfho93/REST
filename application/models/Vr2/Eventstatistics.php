@@ -52,6 +52,7 @@ class Eventstatistics extends BaseStatistics {
         $c=$this->getConector($y1, $y2);
         if($this->getSegmentQuery()!=null)
         {          
+            echo "enre";
             //$this->otherdb->query("invalidate metadata downloads");
             //$this->otherdb->query("refresh logs");            
             $this->otherdb->select(" logs.year, logs.month, logs.day, count(logs.log) as Events");

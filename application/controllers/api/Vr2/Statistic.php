@@ -293,7 +293,7 @@ class Statistic extends EthRESTController {
                     break;
                 case "newusers":
                     //tener en cuenta  SO
-                    switch ($segmento) {
+                    switch ($seg) {
                         case "os":
                             $this->getNewUsersBySO();
                             break;

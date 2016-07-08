@@ -5,9 +5,9 @@
         <group>
             <file>file:/var/www/html/REST/application/models/Vr2/Userstatistics.php</file>
             <file>file:/var/www/html/REST/application/controllers/api/Vr2/Statistic.php</file>
-            <file>file:/var/www/html/REST/application/controllers/api/Vr2/EthRESTController.php</file>
-            <file>file:/var/www/html/REST/application/config/database.php</file>
+            <file>file:/var/www/html/REST/application/models/Vr2/Eventstatistics.php</file>
             <file>file:/var/www/html/REST/application/controllers/api/Vr2/Funnels.php</file>
+            <file>file:/var/www/html/REST/application/models/Vr2/Appstatistics.php</file>
         </group>
     </open-files>
 </project-private>
