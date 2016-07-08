@@ -56,7 +56,11 @@ class Segments extends EthRESTController {
     private function getProperties() {
         $this->load->model(ETHVERSION . 'segment', "segment");
         $result = $this->segment->getAllProperties();
-        $this->prepareAndResponse("200", "Success", array("result" => $result));
+        $this->response([
+                'status' => TRUE,
+                'result' => $result,
+                    ], REST_Controller::HTTP_ACCEPTED);
+        
     }
 
     /**
@@ -64,9 +68,28 @@ class Segments extends EthRESTController {
      */
     private function getOperandos() {
         $this->load->model(ETHVERSION . 'segment', "segment");
-        $this->prepareAndResponse("200", "Success", array("result" => $this->segment->getAllOperandos()));
+         $this->response([
+                'status' => TRUE,
+                'result' => $this->segment->getAllOperandos(),
+                    ], REST_Controller::HTTP_ACCEPTED);
+      
     }
 
+    
+    /**
+     * Funcion que obtiene un segmento por ID y correo
+     * @param String $user_email correo electronico
+     * @param String $idSeg identificador del segmento.
+     * @return array datos del segmento buscado
+     */
+    private function getByID($user_email, $idSeg){
+        $this->load->model(ETHVERSION.'segment', "segment");
+        return $this->segment->getSegmentByID($user_email, $idSeg);
+    }
+    
+      
+    
+    
     /**
      *  Funcionalidad que permite obtener un segmento
      *  de un usuario basado en el id y correo del usuario 
@@ -74,12 +97,12 @@ class Segments extends EthRESTController {
      */
     private function getSegment() {
         $user_email = $this->get('useremail');
-        $idSeg = $this->get('id_segement');
+        $idSeg = $this->get('idsegment');
         $result = $this->getByID($user_email, $idSeg);
         if (!empty($result)) {
             $this->response([
                 'status' => TRUE,
-                'message' => "Success",
+                'result' => $result,
                     ], REST_Controller::HTTP_ACCEPTED);
             //$this->prepareAndResponse("200","Success",array( "result"=> $result));
         } else {
@@ -96,9 +119,8 @@ class Segments extends EthRESTController {
         if (!empty($result)) {
             $this->response([
                 'status' => TRUE,
-                'message' => "success",
                 "result" => $result
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
             //$this->prepareAndResponse("200","Success",array( "result"=> $result));
         } else {
             $this->response([
@@ -119,13 +141,11 @@ class Segments extends EthRESTController {
             'status' => TRUE,
             'message' => "success",
             "result" => json_encode($result)
-                ], REST_Controller::HTTP_OK);
+                ], REST_Controller::HTTP_ACCEPTED);
         // $this->prepareAndResponse("200","Success",array( "result"=> json_encode($result)));
     }
 
     public function index_post() {
-        //$this->load->model(ETHVERSION.'segment', "segment");      
-       //print_r($this->post());
         $user_email = $this->post('useremail');
         $name = $this->post('name');
         $title = $this->post('title');
@@ -154,16 +174,15 @@ class Segments extends EthRESTController {
     }
 
     public function index_delete() {
-        $user_email = $this->delete('useremail');
-        $id_seg = $this->delete('id_segment');
+        $user_email = $this->query('useremail');
+        $id_seg = $this->query('idsegment');
+       // print_r($this->query());
         $result = $this->remove($user_email, $id_seg);
         if ($result) {
-            //$this->prepareAndResponse("200", "Success", array("result" => $result));
             $this->response([
                 'status' => TRUE,
-                'message' => "Success",
                 "result" => $result
-                    ], REST_Controller::HTTP_BAD_REQUEST);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             $this->response([
                 'status' => FALSE,

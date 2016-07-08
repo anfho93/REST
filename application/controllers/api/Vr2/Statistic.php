@@ -44,7 +44,7 @@ class Statistic extends EthRESTController {
     private function loadData($modelo = null) {
         $this->useremail = $this->get('useremail');
         $this->tipoRetencion = $this->get('type');
-        $this->idApp = $this->get('idApp');
+        $this->idApp = $this->get('idapp');
         $this->initialDate = $this->get('initialDate'); //fecha en formato (2013-00-00), la diferencia entre esta y finalDate no debe exeder 3 meses o 90 dias
         $this->finalDate = $this->get('finalDate'); //fecha en formato (2013-00-00), esta fecha no debe ser mayor al dia actual.
         $idSegment = $this->get('segment');
@@ -108,7 +108,7 @@ class Statistic extends EthRESTController {
             $result = $this->sessStats->getSessionsByLanguage($this->idApp, $this->initialDate, $this->finalDate);
             $titles = array("Language", "Sessions");
             //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
-            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => "Users"], REST_Controller::HTTP_OK);
+            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => $titles], REST_Controller::HTTP_OK);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
@@ -285,7 +285,7 @@ class Statistic extends EthRESTController {
     }
 
     public function index_get() {
-        $segmento = $this->uri->segment(5);
+        $seg = $this->uri->segment(5);
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
                 case "usersessions":
@@ -308,7 +308,7 @@ class Statistic extends EthRESTController {
                     $this->users();
                     break;
                 case "sessions":
-                    switch ($segmento) {
+                    switch ( $seg) {
                         case "language":
                             $this->getSessionsByLanguage();
                             break;
@@ -343,7 +343,7 @@ class Statistic extends EthRESTController {
                     $this->getUserInteraction();
                     break;
                 case "activeusers":
-                    switch ($segmento) {
+                    switch ( $seg) {
                         case "language":
                             $this->getActiveUsersDataByLang();
                             break;
@@ -373,7 +373,7 @@ class Statistic extends EthRESTController {
                     $this->userRetention();
                     break;
                 case "variables":
-                    if ($segmento == "state") {
+                    if ( $seg == "state") {
                         $this->getStateVariables();
                     } else if ($segmento == "statedata") {
                         $this->getStateVariableData();
@@ -381,35 +381,41 @@ class Statistic extends EthRESTController {
                     //state, statedata
                     break;
                 case "event":
-                    switch ($segmento) {
+                   
+                   if( $seg==null)
+                   {
+                        $this->eventsDailyData();
+                            return;
+                   }
+                    switch ( $seg) {
                         case "categorytypes":
                             $this->categoryTypes();
-                            break;
+                            return;
                         case "logcategorytype":
                             $this->logsFromCategoryTypes();
-                            break;
+                            return;;
                         case "categoriesdata":
                             $this->categoryDailyData();
-                            break;
+                            return;;
                         case "typedata":
                             $this->typeDailyData();
-                            break;
+                            return;;
                         case "logdata":
                             $this->logDailyData();
-                            break;
+                            return;;
                         case "categories":
                             $this->eventCategories();
-                            break;
+                            return;;
                         case "types":
                             $this->eventTypes();
-                            break;
+                            return;;
                         case "logs":
                             $this->eventLogs();
-                            break;
-                        default :
-                            $this->eventsDailyData();
-                            break;
+                            return;
+                            
+                          
                     }
+                        
                     // categories, types, logs
                     //categorytypes, logscategorytypes
                     break;
@@ -482,8 +488,8 @@ class Statistic extends EthRESTController {
         if ($this->validateData($this->useremail, $this->idApp)) {
             $result = $this->evtStats->getTypes($this->idApp, $this->initialDate, $this->finalDate);
             $titles = array("Types", "# Events");
-            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
-            $this->response([
+
+$this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
@@ -779,14 +785,21 @@ class Statistic extends EthRESTController {
             $sesiones = $this->appstatistics->getTotalSessions($this->idApp, $this->initialDate, $this->finalDate);
             $usuarios = $this->appstatistics->getTotalUsers($this->idApp, $this->initialDate, $this->finalDate);
             $screens = $this->appstatistics->countScreens($this->idApp, $this->initialDate, $this->finalDate);
+         
+            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$sampledata ));  
+            if($sesiones==null)
+                $sesiones=0;
+            if($usuarios==null)
+                $usuarios=0;
+            if($screens==null)
+                $screens = 0;
             $sampledata = array("sessions" => $sesiones, "users" => $usuarios, "screens" => $screens);
-            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$sampledata ));            
             $this->response([
                 'status' => TRUE,
                 'message' => "Success",
-                "result" => $usuarios,
-                "title" => "Active Users"
+                "result" => $sampledata,
                     ], REST_Controller::HTTP_OK);
+            
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -1082,15 +1095,6 @@ class Statistic extends EthRESTController {
         }
     }
 
-    /**
-     * Valida que los datos del usuario sean correctos
-     * @param type $email, correo del usuario
-     * @param type $idApp, id de la aplicacion registrada
-     * @return boolean confirmacion de que el usuario y la app son correctos.
-     */
-    private function validateData($email, $idApp) {
-        $this->load->model(ETHVERSION . "user");
-        return $this->user->userHaveApp($email, $idApp);
-    }
+
 
 }

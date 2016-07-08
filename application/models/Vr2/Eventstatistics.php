@@ -9,7 +9,7 @@
 * @author Andres Felipe Herrera <anfho93@gmail.com>
 *  @version 1.1
 */
-include_once 'baseStatistics.php';
+include_once 'BaseStatistics.php';
 class Eventstatistics extends BaseStatistics {
     private $separador ="-";
     
@@ -22,13 +22,15 @@ class Eventstatistics extends BaseStatistics {
       $this->otherdb = $this->load->database('impala', TRUE); 
       try{
         //$this->otherdb->query("invalidate metadata downloads");      
-          $this->otherdb->query("refresh downloads");      
-        if($this->otherdb->_error_number())
+          $this->otherdb->query("refresh downloads"); 
+        //  print_r($this->otherdb->error());
+        if($this->otherdb->error()["code"]!=null)
         {
          return;   
         }
+         //print_r($this->otherdb->error());
         $this->otherdb->query("refresh default.logs");
-        if($this->otherdb->_error_number())
+        if($this->otherdb->error()["code"]!=null)
         {
          return;   
         }

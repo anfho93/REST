@@ -9,7 +9,7 @@
 * @author Andres Felipe Herrera <anfho93@gmail.com>
 *  @version 1.1
 */
-include_once 'baseStatistics.php';
+include_once 'BaseStatistics.php';
 class Sessionstatistics extends BaseStatistics {
 
    

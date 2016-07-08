@@ -10,7 +10,7 @@ use Aws\DynamoDb\Iterator\ItemIterator;
 * @author Andres Felipe Herrera <anfho93@gmail.com>
 *  @version 1.1
 */
-include_once 'baseStatistics.php';
+include_once 'BaseStatistics.php';
 class Appstatistics extends BaseStatistics {
 
     /**
@@ -172,6 +172,8 @@ class Appstatistics extends BaseStatistics {
     function getStatistics($idApp, $initialDate, $finalDate){
         $usuarios =  $this->getTotalUsers($idApp, $initialDate, $finalDate);
         $sesiones =  $this->getTotalSessions($idApp, $initialDate,$finalDate);
+        if($sesiones == null)
+            $sesiones = 0;
         if($usuarios == 0)
         {$average = 0;}
         else

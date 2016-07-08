@@ -37,8 +37,8 @@ class Segment extends CI_Model {
                         "titulo" => $title,
                         "categoria" => $category);
                     $result = $this->db->insert("ethas_segment", $array);
-                    
-                    if ($this->db->_error_number()) {//no existe email
+                  //  print_r($this->db->error());
+                    if ($this->db->error()["code"] == 1062) {
                         return false;
                     }
                     return $result;
@@ -58,8 +58,10 @@ class Segment extends CI_Model {
      */
     private function processSegmentValue($value){
         $propiedades = json_decode($value);
-        if (json_last_error() == JSON_ERROR_NONE){
+       
+        if (json_last_error() == JSON_ERROR_NONE && $propiedades!=null){
                 $result =  array();
+           
             foreach ($propiedades as $prop) {
                 if(property_exists($prop, "propiedad") &&
                        property_exists($prop, "operando") ){
@@ -82,6 +84,7 @@ class Segment extends CI_Model {
                 }
             }  else return null;
         }
+        
         return null;             
     }
     

@@ -9,7 +9,7 @@
 * @author Andres Felipe Herrera <anfho93@gmail.com>
 *  @version 1.1
 */
-include_once 'baseStatistics.php';
+include_once 'BaseStatistics.php';
 class Userstatistics extends BaseStatistics {
 
    
@@ -204,6 +204,7 @@ class Userstatistics extends BaseStatistics {
         }else{
             $cond ="";
         }
+        
         $this->otherdb->select('mid.y as year, mid.m as month, mid.d as day, count(download) as downloads');
         $this->otherdb->from("( select DISTINCT downloads.year as y, downloads.month as m, downloads.day as d, downloads.id_download as download from downloads inner join sessions
         on ( sessions.id_app = downloads.id_app and sessions.id_download = downloads.id_download)

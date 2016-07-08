@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //require APPPATH . '/libraries/REST_Controller.php';
 require 'EthRESTController.php';
 
-class Funnel extends EthRESTController{
+class Funnels extends EthRESTController{
     
     public function __construct() {
         parent::__construct();
@@ -34,6 +34,7 @@ class Funnel extends EthRESTController{
             
              switch ($this->_pre_get()) {
                 case "resume":
+                    
                     $this->resume();
                     return;
                 case "data":
@@ -107,7 +108,7 @@ class Funnel extends EthRESTController{
             $this->load->model(ETHVERSION."funnel", "funnel");
             $result = $this->funnel->getFunnelByEmail($user_email, $cond);
             $this->updateFunnelState($user_email, $result);
-            $this->response(['status' => TRUE, 'message' => "Success", "result"=>  json_encode($result), "titles" => array("id", "name", "date", "status")], REST_Controller::HTTP_BAD_REQUEST);
+            $this->response(['status' => TRUE, 'message' => "Success", "result"=>  json_encode($result), "titles" => array("id", "name", "date", "status")], REST_Controller::HTTP_ACCEPTED);
         }
     }
 

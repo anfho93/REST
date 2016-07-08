@@ -139,16 +139,13 @@ class Apps extends EthRESTController {
     }
 
     public function index_delete() {
-        
-        
+        $this->load->model(ETHVERSION . "App", "app");
+        $this->load->model(ETHVERSION . "User", "user");
         $idApp = ($this->query('idapp'));
         $email = ($this->query('useremail'));
         $status = 0;
         $appname = ($this->query('appname'));
-        $this->load->model(ETHVERSION . "App", "app");
-        $this->load->model(ETHVERSION . "User", "user");
         if ($this->user->userHaveApp($email, $idApp)) {
-
             if ($status) {
                 $result = $this->app->activateApplication($idApp, $appname);
             } else {

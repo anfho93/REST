@@ -115,6 +115,7 @@ class EthRESTController extends REST_Controller {
     
     protected function _pre_get() {
         $segmento = $this->uri->segment(4);
+        
         return $segmento;
     }
     
