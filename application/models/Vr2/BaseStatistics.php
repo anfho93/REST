@@ -85,8 +85,10 @@ class BaseStatistics extends CI_Model {
         $labels =  array(array("Date"));
        // if($daysBetween < 89)
         {
-            for ($i=1; $i <= $daysBetween; $i++) { 
-                    $labels[$i] = array(date("Y-m-d", strtotime($initialDate . "+ $i day" )));	
+            $labels[1] = array(date("Y-m-d", strtotime($initialDate )));
+            for ($i=2; $i-1 <= $daysBetween; $i++) { 
+                $v = $i-1;
+                    $labels[$i] = array(date("Y-m-d", strtotime($initialDate . "+$v day" )));	
             }			
         }
         return $labels;

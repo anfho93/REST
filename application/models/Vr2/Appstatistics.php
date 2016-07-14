@@ -67,7 +67,7 @@ class Appstatistics extends BaseStatistics {
        @list($d1, $m1, $y1) = explode( $this->separador,$initialDate,3);
        @list($d2, $m2, $y2) = explode( $this->separador,$finalDate,3);
         $c=$this->getConector($y1, $y2);
-        $this->db->select('year, month, day , count(distinct(iddevice)) as UsuariosNuevos ');
+        $this->db->select('year, month, day , count(distinct(iddevice)) as usuariosnuevos ');
         $this->db->from('ethas_downloads');
         $this->db->where( "id_app='$idApp' and "
                                 . "((year = $y1 and ( $m1 < month or ($m1=month and day >= $d1 and day <= 31 ) ))  $c 
@@ -112,7 +112,7 @@ class Appstatistics extends BaseStatistics {
            
         }
         
-        $result = $this->otherdb->get();
+        $result = $this->db->get();
         return $result->first_row()->usuarios;
     }
         /**
@@ -252,7 +252,7 @@ class Appstatistics extends BaseStatistics {
        @list($d1, $m1, $y1) = explode( $this->separador, $initialDate,3);
        @list($d2, $m2, $y2) = explode( $this->separador, $finalDate, 3);
         $c=$this->getConector($y1, $y2);
-        //$this->otherdb->query("refresh dailyuserdata");
+        $this->otherdb->query("refresh dailyuserdata");
         $this->otherdb->select(" id_app, year, month, day , count( distinct dailyuserdata.id_download) as UsuariosActivos  ");
         $this->otherdb->from("dailyuserdata");
         $this->otherdb->where("id_app", $idApp);

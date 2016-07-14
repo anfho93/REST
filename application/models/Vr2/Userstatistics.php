@@ -37,16 +37,16 @@ class Userstatistics extends BaseStatistics {
         $c=$this->getConector($y1, $y2);
        
         
-        $this->otherdb->select('platformname,  count(id_download) as users');
-        $this->otherdb->from('downloads');
-        $this->otherdb->where( "id_app='$idApp' and "
+        $this->db->select('platformname,  count(id_download) as users');
+        $this->db->from('ethas_downloads');
+        $this->db->where( "id_app='$idApp' and "
                 . "((year = $y1 and ( $m1 < month or ($m1=month and day >= $d1 and day <= 31 ) ))  $c 
              (year = $y2 and ( $m2 > month or ($m2=month and day >= 01 and $d2 >= day ))))
                 ");
         $this->addSegmentQuery($this->otherdb);
         
-        $this->otherdb->group_by('platformname');
-        $result = $this->otherdb->get();
+        $this->db->group_by('platformname');
+        $result = $this->db->get();
         //$result = $this->otherdb->query($query);
         $labels =  $result->result_array();
         return $labels;
@@ -98,20 +98,20 @@ class Userstatistics extends BaseStatistics {
        @list($d1, $m1, $y1) = explode( $this->separador,$initialDate,3);
        @list($d2, $m2, $y2) = explode( $this->separador,$finalDate,3);
         $c=$this->getConector($y1, $y2);
-        $this->otherdb->select('year, month, day, platformname,  count(id_download) as Users');
-        $this->otherdb->from('downloads');
-        $this->otherdb->where("id_app", $idApp);
-        $this->otherdb->where("platformname", $os);
-        $this->otherdb->where("((year = $y1 and ( $m1 < month or ($m1=month and day >= $d1 and day <= 31 ) ))  $c 
+        $this->db->select('year, month, day, platformname,  count(id_download) as users');
+        $this->db->from('ethas_downloads');
+        $this->db->where("id_app", $idApp);
+        $this->db->where("platformname", $os);
+        $this->db->where("((year = $y1 and ( $m1 < month or ($m1=month and day >= $d1 and day <= 31 ) ))  $c 
                                 (year = $y2 and ( $m2 > month or ($m2=month and day >= 01 and $d2 >= day ))))" );
-         $this->otherdb->group_by("year, month, day, platformname");
+         $this->db->group_by("year, month, day, platformname");
         /* $query = " select year, month, day, platformname,  count(id_download) as Users from downloads 
         where id_app='$idApp' and platformname = '$os' and
         ((downloads.year = $y1 and ( $m1 < downloads.month or ($m1=downloads.month and downloads.day >= $d1 and downloads.day <= 31 ) ))  $c
         (downloads.year = $y2 and ( $m2 > downloads.month or ($m2=downloads.month and downloads.day >= 01 and $d2 >= downloads.day ))))
         group by year, month, day, platformname";*/
-        $this->addSegmentQuery($this->otherdb);
-        $result = $this->otherdb->get();
+        $this->addSegmentQuery($this->db);
+        $result = $this->db->get();
         //$result = $this->otherdb->query($query);
         $titlearray = array("Users");
         

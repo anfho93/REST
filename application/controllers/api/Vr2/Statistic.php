@@ -144,7 +144,7 @@ class Statistic extends EthRESTController {
             $result = $this->sessStats->getSessionsByMB($this->idApp, $this->initialDate, $this->finalDate);
             $titles = array("Mobile Brand", "Sessions");
             //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result , "titles" => $titles));
-            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => $titles], REST_Controller::HTTP_OK);
+            $this->response(['status' => true, 'message' => "Success", "result" => $result, "title" => $titles], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response(['status' => FALSE, 'message' => "Fail", "result" => array()], REST_Controller::HTTP_CONFLICT);
@@ -177,7 +177,7 @@ class Statistic extends EthRESTController {
         $this->load->model(ETHVERSION . "Userstatistics", "userStats");
         $this->loadData($this->userStats);
         $result = null;
-        $OS = $this->getUrlData('platform', 'base64');
+        $OS = $this->get('platform');
         if ($this->validateData($this->useremail, $this->idApp)) {
             $result = $this->userStats->getDailyNewUsersBySO($this->idApp, $this->initialDate, $this->finalDate, $OS);
             //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result ));
