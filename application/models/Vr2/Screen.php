@@ -51,14 +51,17 @@ class Screen extends CI_Model {
     function reportScreen($versionEthAppsSystem,$appversion,$idDownload,$idApp,$idSession,$screen)
     {
         str_replace(",", ".", $screen);
-        $row = time()."|".$idDownload."|".$screen."|".$idApp."|".$idSession."|0|".$appversion."|".$versionEthAppsSystem.PHP_EOL;
-           if ( !file_exists(DATAROUTE) ) {
-              mkdir (DATAROUTE, 0744);
-            }
-            if(file_put_contents ( DATAROUTE."screen",  $row, FILE_APPEND ) > 0){
-                return "report screen";
-            }
-            return "didnt report screen";
+        $stringdate = date("Ynj");
+        $row = time() . "|" . $idDownload . "|" . $screen . "|" . $idApp . "|" . $idSession . "|0|" . $appversion . "|" . $versionEthAppsSystem . PHP_EOL;
+        if (!file_exists(DATAROUTE)) {
+            mkdir(DATAROUTE, 0744);
+        }
+
+        if (file_put_contents(DATAROUTE . "screen", $row, FILE_APPEND) > 0) {
+            file_put_contents(DATAROUTE . "screen" . $stringdate, $row, FILE_APPEND);
+            return "report screen";
+        }
+        return "didnt report screen";
     }
 }
 ?>

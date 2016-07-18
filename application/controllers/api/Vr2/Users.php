@@ -85,7 +85,7 @@ class Users extends EthRESTController{
             //$this->prepareAndResponse("200","Success",array("autenticated"=>"false"));    
             $this->response([
             'status' => false,
-            'message' => "Fail",
+            'message' => "Check the username and password",
             "autenticated"=>"false"
                 ], REST_Controller::HTTP_NOT_ACCEPTABLE);
         } 

@@ -74,11 +74,14 @@ class Session extends CI_Model {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 	curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
 	//curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100);
+        $stringdate  = date("Ynj");
+        file_put_contents ( DATAROUTE."session".$stringdate,  $row, FILE_APPEND );
+        file_put_contents ( DATAROUTE."session",  $row, FILE_APPEND );
 	$output=curl_exec($ch);	 	
-        //echo $output;
+        
 	curl_close($ch);
             
-        file_put_contents ( DATAROUTE."session",  $row."\n", FILE_APPEND );
+        
         
         // $this->app->reportSession($idApp);
         

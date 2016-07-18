@@ -59,14 +59,17 @@ class Log extends CI_Model {
         $this->load->model(ETHVERSION.'Download', "download");
         //$this->load->model(ETHVERSION.'Session', "sess");
 
-       // if($this->verifySession($idDownload,$idApp))    
+       // if($this->verifySession($idDownload,$idApp)) 
+        $stringdate  = date("Ynj");
         $row = $idApp.",".$idDownload.",".$appversion.",".$log.",".$idSession.",".$versionEthAppsSystem.",".$category.",".$type.",".$value.",".time().PHP_EOL;
             //$row = $idDownload.",".$category.",".$idSession.",".$value.",".$appversion.",".$idApp.",".$type.",".$log.",".time().",".$versionEthAppsSystem.PHP_EOL;
                 if ( !file_exists(DATAROUTE) ) {
                   mkdir (DATAROUTE, 0744);
                  }
             if(file_put_contents ( DATAROUTE."log",  $row, FILE_APPEND ) > 0){
+                file_put_contents ( DATAROUTE."log".$stringdate,  $row, FILE_APPEND );
                 return "report log";
+                
             }
             return "didnt report log";
         
