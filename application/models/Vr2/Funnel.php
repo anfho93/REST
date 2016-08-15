@@ -56,8 +56,7 @@ class funnel extends CI_Model {
      * @return mixed, string con el nombre o null si no fue encontrado.
      */
     function getFunnelNameById($id){
-        $this->db->where('id_funnels', $id);
-        
+        $this->db->where('id_funnels', $id);        
         $this->db->select("name");
         $query = $this->db->get($this->tablename);
         $row = $query->first_row();
@@ -80,8 +79,7 @@ class funnel extends CI_Model {
     function getFunnelData($idApp, $funelName, $funnelID){
         
         $this->otherdb->where('idapp', $idApp);
-        $this->otherdb->where('idfunnel', $funelName);
-        
+        $this->otherdb->where('idfunnel', $funelName);        
         //$this->otherdb->where('id_funnels', $funnelID);
         $this->otherdb->select("*");
         $query = $this->otherdb->get("funnels");
@@ -117,7 +115,7 @@ class funnel extends CI_Model {
      * @return mixed resultado de los funnels
      */
     public function getFunnelByEmail($email, $status = ""){
-        $this->db->select('id_funnels ,name, date, status');
+        $this->db->select('id_funnels,name, date, status');
         if($status!="")
         {
             $this->db->where('status',$status);

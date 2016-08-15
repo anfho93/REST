@@ -105,7 +105,8 @@ class Variable extends CI_Model {
         $objResponse = null;
         $result = $this->db->get_where($this->tablename, array("id_app" => $idApp, "id_variable" => $id));
         // print_r($this->tablename." ".$idApp . " - ".$id);
-        if ($result->num_rows > 0) {
+        //print_r($result->);
+        if ($result->num_rows() > 0) {
             $objResponse = $result->first_row();
         }
         return $objResponse;
@@ -159,7 +160,7 @@ class Variable extends CI_Model {
     function getABVariable($idVar) {
         $objResponse = array();
         $result = $this->db->get_where($this->tablenameab, array("id_variable" => $idVar));
-        if ($result->num_rows > 0) {
+        if ($result->num_rows() > 0) {
             $objResponse = $result->result_array();
         }
         return $objResponse;

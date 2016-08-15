@@ -175,8 +175,9 @@ class Segment extends CI_Model {
     {
         $this->db->select(" id_segmento, nombre,titulo, categoria, valor");
         $this->db->from("ethas_segment");
-        $this->db->where("id_user", $user_email);       
-        $result = $this->db->get();
+        $this->db->where("id_user = 'a@a.a' || id_user = '$user_email' ");       
+        $result = $this->db->get();  
+  
         return $result->result_array();
     }
     
@@ -188,7 +189,7 @@ class Segment extends CI_Model {
      */
     public function getSegmentByID($user_email, $idseg){
         $this->db->select(" id_segmento, nombre,titulo, categoria, valor");
-        $this->db->where("id_user", $user_email);
+        //$this->db->where("id_user", $user_email);
         $this->db->where("id_segmento", $idseg);
         $this->db->from("ethas_segment");
         $result = $this->db->get();
@@ -233,8 +234,8 @@ class Segment extends CI_Model {
      * @return String
      */
     public function delete($useremail, $idSeg){
-        $result = $this->db->delete("ethas_segment", array("id_segmento"=>$idSeg, "id_user"=>$useremail));
-        return $result;        
+        $result = $this->db->delete("ethas_segment", array("id_segmento"=>$idSeg, "id_user"=>$useremail, "categoria"=>"User"));        
+        return $this->db->affected_rows()==1;        
     }
     
     

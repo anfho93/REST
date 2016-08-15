@@ -48,15 +48,16 @@ class Statistic extends EthRESTController {
         $this->initialDate = $this->get('initialDate'); //fecha en formato (2013-00-00), la diferencia entre esta y finalDate no debe exeder 3 meses o 90 dias
         $this->finalDate = $this->get('finalDate'); //fecha en formato (2013-00-00), esta fecha no debe ser mayor al dia actual.
         $idSegment = $this->get('segment');
-
+        
         if ($idSegment !== "" && $idSegment !== null) {
             $this->load->model(ETHVERSION . "segment", "seg");
             $segment = $this->seg->getSegment($idSegment);
             if ($segment != null && array_key_exists("valor", $segment) && $modelo != null) {
                 $this->segment = $segment["valor"];
                 $modelo->addCondition($this->segment);
+                 echo "Error";
             } else {
-                // echo "Error";
+                
                 //$this->prepareAndResponse("500","Fail",array("success"=>"false", "message"=>"No se encontro el segmento" )); 
             }
         }
@@ -387,7 +388,8 @@ class Statistic extends EthRESTController {
                         $this->eventsDailyData();
                             return;
                    }
-                    switch ( $seg) {
+                   //echo $seg+"hola";
+                   switch ( $seg) {
                         case "categorytypes":
                             $this->categoryTypes();
                             return;
@@ -443,7 +445,7 @@ class Statistic extends EthRESTController {
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -468,7 +470,7 @@ class Statistic extends EthRESTController {
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -494,7 +496,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -519,7 +521,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -549,7 +551,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -574,7 +576,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -602,7 +604,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -629,7 +631,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // $this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -653,7 +655,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -682,7 +684,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -709,7 +711,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -737,7 +739,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titles
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
             $this->response([
@@ -765,7 +767,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $sampledata,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             $this->response([
                 'status' => false,
@@ -798,7 +800,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $sampledata,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
             
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));  
@@ -825,7 +827,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $usuarios,
                 "title" => "Active Users"
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
             $this->response([
@@ -853,7 +855,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "title" => "Active Users"
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
             $this->response([
@@ -878,7 +880,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
             $this->response([
@@ -909,7 +911,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // datos invalidos
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
@@ -949,7 +951,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titulo
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // datos invalidos
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));
@@ -978,7 +980,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "titles" => $titulo
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // datos invalidos
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
@@ -1004,7 +1006,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // datos invalidos
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
@@ -1030,7 +1032,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result,
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // datos invalidos
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
@@ -1057,7 +1059,7 @@ $this->response([
                 'message' => "Success",
                 "result" => $result,
                 "title" => "Sessions"
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
             $this->response([
@@ -1083,7 +1085,7 @@ $this->response([
                 'status' => TRUE,
                 'message' => "Success",
                 "result" => $result
-                    ], REST_Controller::HTTP_OK);
+                    ], REST_Controller::HTTP_ACCEPTED);
         } else {
             // datos invalidos
             //$this->prepareAndResponse("200", "Fail", array("success" => "false", "result" => array()));

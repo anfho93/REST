@@ -107,8 +107,12 @@ class Funnels extends EthRESTController{
         else {            
             $this->load->model(ETHVERSION."funnel", "funnel");
             $result = $this->funnel->getFunnelByEmail($user_email, $cond);
-            $this->updateFunnelState($user_email, $result);
-            $this->response(['status' => TRUE, 'message' => "Success", "result"=>  json_encode($result), "titles" => array("id", "name", "date", "status")], REST_Controller::HTTP_ACCEPTED);
+            $this->updateFunnelState($user_email, $result);$aux = array();
+            foreach ($result as $row) {
+                unset($row["id_funnels"]);
+                $aux[] = $row;
+            }
+            $this->response(['status' => TRUE, 'message' => "Success", "result"=>  json_encode($aux), "titles" => array("ID", "Date", "Status")], REST_Controller::HTTP_ACCEPTED);
         }
     }
 

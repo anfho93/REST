@@ -143,7 +143,7 @@ class Apps extends EthRESTController {
         $this->load->model(ETHVERSION . "User", "user");
         $idApp = ($this->query('idapp'));
         $email = ($this->query('useremail'));
-        $status = 0;
+        $status = $this->query('active');
         $appname = ($this->query('appname'));
         if ($this->user->userHaveApp($email, $idApp)) {
             if ($status) {

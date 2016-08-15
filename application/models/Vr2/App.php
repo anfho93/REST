@@ -276,8 +276,8 @@ class App extends CI_Model {
     * @param  string $appname nombre de la aplicacion
     */
     function activateApplication($idApp, $appname=null){
-        $result = $this->db->update('ethas_application', array("active" =>  1), "id_app = '$idApp' ");        
-       return $result;
+        $result = $this->db->update('ethas_application', array("active" =>  true), "id_app = '$idApp' ");        
+        return $result;
     }
 
     /**

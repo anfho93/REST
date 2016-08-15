@@ -141,10 +141,10 @@ class Variables extends EthRESTController {
         if (!empty($arrVars) && $arrVars["class"] == "AB") {
             $abvars = $this->variable->getABVariable($arrVars["id_variable"]);
             //$this->prepareAndResponse("200", "Success", array("cond" => $abvars));            
-            $this->response(['status' => TRUE, "message" => "Success", 'cond' => $abvars], REST_Controller::HTTP_OK);
+            $this->response(['status' => TRUE, "message" => "Success", 'cond' => $abvars], REST_Controller::HTTP_ACCEPTED);
         } else {
             //$this->prepareAndResponse("200", "Fail", array("message" => "NOT AB VARIABLE"));
-            $this->response(['status' => TRUE, "message" => "NOT AB VARIABLE"], REST_Controller::HTTP_OK);
+            $this->response(['status' => TRUE, "message" => "NOT AB VARIABLE"], REST_Controller::HTTP_ACCEPTED);
         }
     }
 
@@ -176,7 +176,7 @@ class Variables extends EthRESTController {
             $result = $this->variable->registerVariable($name, $value, $class, $icon, $idApp, $cond);
             if ($result != false) {
                 //$this->prepareAndResponse("200", "Success", array("ItemRegistered" => "true"));
-                $this->response(['status' => TRUE, 'message' => "ItemRegistered"], REST_Controller::HTTP_OK);
+                $this->response(['status' => TRUE, 'message' => "ItemRegistered"], REST_Controller::HTTP_ACCEPTED);
             } else {
                 //$this->prepareAndResponse("200", "Success", array("Already registred" => "false"));
                 $this->response(['status' => FALSE, 'message' => "Already registred"], REST_Controller::HTTP_BAD_REQUEST);
@@ -189,7 +189,7 @@ class Variables extends EthRESTController {
 
     private function registerABVar() {
         //$this->load->model(ETHVERSION . 'variable');
-        print_r($this->post());
+       // print_r($this->post());
         $versionEthAppsSystem = $this->post('versionEthAppsSystem');
         $idVariable = $this->post('idvar');
         $condName = $this->post('varname');
@@ -265,6 +265,7 @@ class Variables extends EthRESTController {
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
                 case "ab":
+                    
                     $this->modifyABVariable();
                     break;
                 case "analitic":
@@ -286,6 +287,7 @@ class Variables extends EthRESTController {
         $useremail = $this->put('useremail');
         $idVar = $this->put('idvar');
         $value = $this->put('value');
+        //print_r($value);
         $cond = null;
         if ($this->app->appExists($idApp) && $this->user->userHaveApp($useremail, $idApp)) {//validar el usuario y el app
             $variable = $this->variable->getVariableByID($idApp, $idVar);
@@ -298,13 +300,13 @@ class Variables extends EthRESTController {
                 if ($result != false) {
                     $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "true"], REST_Controller::HTTP_ACCEPTED);
                 } else {
-                    $this->response(['status' => FALSE, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+                    $this->response(['status' => FALSE, 'message' => "1The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
                 } 
             } else {
-                $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+                $this->response(['status' => false, 'message' => "2The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
             }
         } else {
-            $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+            $this->response(['status' => false, 'message' => "3The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
         }
     }
 
@@ -358,6 +360,8 @@ class Variables extends EthRESTController {
             } else {
                 $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "FALSE"], REST_Controller::HTTP_BAD_REQUEST);
             }
+        }  else {
+          $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "FALSE"], REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 

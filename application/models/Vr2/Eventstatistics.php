@@ -22,14 +22,14 @@ class Eventstatistics extends BaseStatistics {
       $this->otherdb = $this->load->database('impala', TRUE); 
       try{
         //$this->otherdb->query("invalidate metadata downloads");      
-          $this->otherdb->query("refresh downloads"); 
+        //  $this->otherdb->query("refresh downloads"); 
         //  print_r($this->otherdb->error());
         if($this->otherdb->error()["code"]!=null)
         {
          return;   
         }
          //print_r($this->otherdb->error());
-        $this->otherdb->query("refresh default.logs");
+       // $this->otherdb->query("refresh default.logs");
         if($this->otherdb->error()["code"]!=null)
         {
          return;   
@@ -52,7 +52,7 @@ class Eventstatistics extends BaseStatistics {
         $c=$this->getConector($y1, $y2);
         if($this->getSegmentQuery()!=null)
         {          
-            echo "enre";
+            //print_r($this->getSegmentQuery());
             //$this->otherdb->query("invalidate metadata downloads");
             //$this->otherdb->query("refresh logs");            
             $this->otherdb->select(" logs.year, logs.month, logs.day, count(logs.log) as Events");

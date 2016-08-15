@@ -80,7 +80,7 @@ class Users extends EthRESTController{
             'status' => TRUE,
             'message' => "Success",
             "autenticated"=>"true"
-                ], REST_Controller::HTTP_OK);
+                ], REST_Controller::HTTP_ACCEPTED);
         }else{
             //$this->prepareAndResponse("200","Success",array("autenticated"=>"false"));    
             $this->response([
@@ -92,9 +92,8 @@ class Users extends EthRESTController{
     }
     
     private function registerUser(){      
-        //print_r($this->post());
-        $email = $this->post('useremail');
-        
+       // print_r($this->post());
+        $email = $this->post('useremail');        
         $userCompanyName =$this->post('companyname');
         $username = $this->post('username');
         $userLastName = $this->post('userlastname');
@@ -107,7 +106,7 @@ class Users extends EthRESTController{
              $this->response([
             'status' => TRUE,
             'message' => "REGISTRED"
-                ], REST_Controller::HTTP_OK);
+                ], REST_Controller::HTTP_ACCEPTED);
         }else{
             //$this->prepareAndResponse("200", "Success", array("registred"=>"false"));    
              $this->response([

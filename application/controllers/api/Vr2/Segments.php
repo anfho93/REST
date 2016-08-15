@@ -137,9 +137,14 @@ class Segments extends EthRESTController {
     private function getUserSegments() {
         $user_email = $this->get('useremail');
         $result = $this->segment->getSegments($user_email);
+          $segments = array();
+        foreach ($result as $key => $seg) {
+            $segments[$seg['categoria']][] = $seg;
+        }
         $this->response([
             'status' => TRUE,
             'message' => "success",
+            "segments" => json_encode($segments),
             "result" => json_encode($result)
                 ], REST_Controller::HTTP_ACCEPTED);
         // $this->prepareAndResponse("200","Success",array( "result"=> json_encode($result)));
@@ -186,7 +191,7 @@ class Segments extends EthRESTController {
         } else {
             $this->response([
                 'status' => FALSE,
-                'message' => "error"
+                'message' => "No se puede eliminar el segmento"
                     ], REST_Controller::HTTP_BAD_REQUEST);
             
         }
