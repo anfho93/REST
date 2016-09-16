@@ -77,7 +77,6 @@ class Apps extends EthRESTController {
     }
 
     public function index_post() {
-       // print_r($this->post());
         $this->load->model(ETHVERSION . 'App', "application");
         $name_app = ($this->post('appname'));
         $description = ($this->post('description'));

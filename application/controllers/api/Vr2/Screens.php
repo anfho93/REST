@@ -65,7 +65,7 @@ class Screens extends EthRESTController {
         $result = null;
         if($this->validateData($this->useremail, $this->idApp ))
         {
-            $screename = $this->getUrlData('screenname','base64');
+            $screename = $this->get('screenname');
             if($screename != null && $screename != "" )
             {   
                 $this->screenstatistics->addCondition($this->segment);

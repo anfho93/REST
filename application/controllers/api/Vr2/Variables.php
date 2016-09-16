@@ -220,7 +220,9 @@ class Variables extends EthRESTController {
                     
                     $this->registerABVar();
                     break;
-
+                    case "analitic":
+                        $this->analiticVariable();
+                    break;
                 default:
                     $this->registerVar();
                     break;
@@ -245,13 +247,13 @@ class Variables extends EthRESTController {
     private function analiticVariable() {
 
         $this->load->model(ETHVERSION . 'statevariable', "statevariable");
-        $name_variable = $this->put('name');
-        $value = $this->put('value');
+        $name_variable = $this->post('name');
+        $value = $this->post('value');
         $date = time();
-        $id_download = $this->put('idDownload');
-        $id_app = $this->put('idApp');
+        $id_download = $this->post('iddownload');
+        $id_app = $this->post('idapp');
         //nuevo elemento id de la session
-        $session = $this->put('idSession');
+        $session = $this->post('idsession');
         if ($this->verifySession($id_download, $id_app, $session)) {
             //echo "entre";
             $this->statevariable->createVariable($id_download, $id_app, $name_variable, $value);
@@ -268,9 +270,7 @@ class Variables extends EthRESTController {
                     
                     $this->modifyABVariable();
                     break;
-                case "analitic":
-                    $this->analiticVariable();
-                    break;
+                
                 case "abdef":
                     
                     $this->modifyDefaultValues();
@@ -300,13 +300,13 @@ class Variables extends EthRESTController {
                 if ($result != false) {
                     $this->response(['status' => true, 'message' => "Success", "Variable Updated" => "true"], REST_Controller::HTTP_ACCEPTED);
                 } else {
-                    $this->response(['status' => FALSE, 'message' => "1The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+                    $this->response(['status' => FALSE, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
                 } 
             } else {
-                $this->response(['status' => false, 'message' => "2The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+                $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
             }
         } else {
-            $this->response(['status' => false, 'message' => "3The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
+            $this->response(['status' => false, 'message' => "The dataset doesn't match", "Variable Updated" => "false"], REST_Controller::HTTP_CONFLICT);
         }
     }
 

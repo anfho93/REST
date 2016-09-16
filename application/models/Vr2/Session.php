@@ -106,8 +106,8 @@ class Session extends CI_Model {
         $query = "";
         //si no funciona con este codigo se debe crear nuestra propia consulta.
         $result = $this->db->get_where($this->tablename, array('id_session' => $idsession, "id_app" => $id_app ));
-        print_r($result->num_rows);
-        return $result->num_rows > 0;
+        //print_r($result->num_rows);
+        return $result->num_rows() > 0;
     }
 
     /**
@@ -118,7 +118,7 @@ class Session extends CI_Model {
     function countSessions($idApp){
        $query =  "SELECT count(id_session) as count from ethas_session where id_app = '$idApp' ";
        $result = $this->db->query($query);
-       if($result->num_rows > 0)
+       if($result->num_rows() > 0)
        {    
             $row = $result->first_row("array");
             return $row["count"];
