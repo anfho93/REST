@@ -5,9 +5,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 // This can be removed if you use __autoload() in config.php OR use Modular Extensions
 //require APPPATH . '/libraries/REST_Controller.php';
 require 'EthRESTController.php';
-
+/**
+ * Clase que representa el endpoint de descargas, para que los usuarios
+ * de las aplicacione pueda reportar datos.
+ */
 class Downloads extends EthRESTController {
 
+    /**
+     * Constructor de la clase, verifica la existencia de la funcion requerida
+     */
     public function __construct() {
         parent::__construct();
         $methodname = strtolower("index_" . $this->request->method);
@@ -17,6 +23,9 @@ class Downloads extends EthRESTController {
         }
     }
 
+    /**
+     * Permite realizar funcones de registro de usuario de aplicacion (descargas)
+     */
        public function index_post() {        
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
@@ -35,7 +44,21 @@ class Downloads extends EthRESTController {
 
     
     
-    
+    /**
+     * Esta funcion permite crear u obtener un identificador de descarga o uso de una app
+     * un identificador que sera unico una vez sea obtenido, todos 
+     * @param iddevice identificador unico del dispositivo 
+     * @param string model  nombre del modelo del dispositivo
+     * @param string naem nombre del dispositivo
+     * @param string platformname nombre del sistema operativo
+     * @param string platformversion version de la plataforma del dispositivo
+     * @param string idapp  identificador de la aplicacion
+     * @param jsonstring addtionalinfo informacion adicional del dispositivo en formato json
+     * @param string versionEthAppsSystem version del sistema de analiticas
+     * @throw <400 Bad Request> este mensaje es mostrado cuando hay datos duplicados o en su defecto no se pudo regitrar el usuario
+     * @throw <201 Accepted> mensaje mostrado cuando el usuario se registro correctamente.
+     * is called, basically if the idApp data is null or empty
+     */
     private function getIdDownload(){
         $idDevice = $this->post('iddevice');
         $model = $this->post('model');

@@ -1,21 +1,12 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
- * Description of Screen
- *
- * @author andres
+ * Controlador encargado de manejar todas las peticiones relacionadas con el reporte y consulta de datos
+ * sobre las pantallas de un dispositivo. 
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// This can be removed if you use __autoload() in config.php OR use Modular Extensions
-//require APPPATH . '/libraries/REST_Controller.php';
-//require APPPATH . '/libraries/REST_Controller.php';
 require 'EthRESTController.php';
 
 class Screens extends EthRESTController {
@@ -27,6 +18,10 @@ class Screens extends EthRESTController {
     private $tipoRetencion;
     public $segment = null;
 
+    /**
+     * constructor de la clase, verifica que los metodos existan
+     * y carga los modelos requeridos 
+     */
     public function __construct() {
         parent::__construct();
         $methodname = strtolower("index_" . $this->request->method);
@@ -37,6 +32,11 @@ class Screens extends EthRESTController {
         $this->load->model(ETHVERSION . "appstatistics");
     }
 
+    /**
+     * Metodo que realiza la verificacion que el endpoint requerido exista
+     * este metodo es llamado en una peticion tipo GET
+     * 
+     */
     public function index_get() {
         if ($this->_pre_get() != null) {
             switch ($this->_pre_get()) {
@@ -58,7 +58,12 @@ class Screens extends EthRESTController {
     }
     
     /**
-     * Permite obtener informacion especifica de una pantallas registrada
+     * Permite obtener estadisticas especifica de una pantalla registrada
+     * parametros recibidos via GET
+     * @before es necesario usar el metodo loaddata
+     * @param   string screenname nombre de la pantalla especifica
+     * @throw <403 forbiden>  si los datos son invalidos
+     * @throw <201 accepted>  respuesta con los datos en formato JSON.
      */
     private function getScreensData(){        
         $this->loadData($this->screenstatistics);
@@ -73,15 +78,20 @@ class Screens extends EthRESTController {
             }else{
                  $result = $this->screenstatistics->getScreensData($this->idApp, $this->initialDate, $this->finalDate); 
             }                  
-            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result));   
             $this->response(['status' => TRUE, "result"=>$result], REST_Controller::HTTP_ACCEPTED);
         }else{
             // datos invalidos
-            //$this->prepareAndResponse("200","Fail",array("success"=>"false", "result"=>array() ));            
             $this->response(['status' => FALSE], REST_Controller::HTTP_FORBIDDEN);
         }
     }
 
+    /**
+     * Permite obtener estadisticas de las pantallas registradas
+     * parametros recibidos via GET
+     * @before es necesario usar el metodo loaddata
+     * @throw <403 forbiden>  si los datos son invalidos
+     * @throw <201 accepted>  respuesta con los datos en formato JSON.
+     */
     private function getScreensReport() {
         $this->loadData($this->appstatistics);
         $result = null;
@@ -105,6 +115,13 @@ class Screens extends EthRESTController {
         }
     }
 
+     /**
+     * Permite obtener estadisticas en tabla de las pantallas registradas
+     * parametros recibidos via GET
+     * @before es necesario usar el metodo loaddata
+     * @throw <403 forbiden>  si los datos son invalidos
+     * @throw <201 accepted>  respuesta con los datos en formato JSON.
+     */
     private function getScreen() {
         $this->loadData($this->appstatistics);
         $result = null;
@@ -112,19 +129,25 @@ class Screens extends EthRESTController {
             $result = $this->appstatistics->getGeneralScreensData($this->idApp, $this->initialDate, $this->finalDate);
             $titulo = array("Screen", "Visualization");
             $this->response(['status' => TRUE, "titles" => $titulo, "result" => $result], REST_Controller::HTTP_ACCEPTED);
-            //$this->prepareAndResponse("200", "Success", array("success" => "true", "result" => $result, "titles" => $titulo));
+            
         } else {
-            //$this->prepareAndResponse("200", "Fail", array("success" => "false", "result" => array()));
+            
             $this->response(['status' => FALSE], REST_Controller::HTTP_FORBIDDEN);
         }
     }
 
+     /**
+     * Permite obtener estadisticas sobre la interaccionde los usuarios 
+     * parametros recibidos via GET
+     * @before es necesario usar el metodo loaddata
+     * @throw <403 forbiden>  si los datos son invalidos
+     * @throw <201 accepted>  respuesta con los datos en formato JSON.
+     */
     private function getInteractions() {
         $this->loadData($this->screenstatistics);
         $result = null;
         if ($this->validateData($this->useremail, $this->idApp)) {
             $result = $this->screenstatistics->getInteraction($this->idApp, $this->initialDate, $this->finalDate);
-            //$this->prepareAndResponse("200","Success",array("success"=>"true", "result"=>$result  ));            
             $this->response(['status' => TRUE, "result" => $result], REST_Controller::HTTP_ACCEPTED);
         } else {
             // datos invalidos           
@@ -132,6 +155,16 @@ class Screens extends EthRESTController {
         }
     }
 
+    /**
+     * 
+     * @param Ci_model $modelo modelo al que seran agregados los datos o parametros.
+     * @param string  useremail correo electronico del usuario
+     * @param string  string tipo de retencion  que se desea obtener
+     * @param string  idApp identificador del correo electronico
+     * @param string  initialDate fecha inicial del analisis
+     * @param string  finalDate fecha final del analisis
+     * @param string  segment segmento del usuario que se queire consultar
+     */
     private function loadData($modelo = null) {
         $this->useremail = $this->get('useremail');
         $this->tipoRetencion = $this->get('type');
@@ -148,18 +181,23 @@ class Screens extends EthRESTController {
                 $this->segment = $segment["valor"];
                 $modelo->addCondition($this->segment);
             } else {
-                // echo "Error";
-                //$this->prepareAndResponse("500","Fail",array("success"=>"false", "message"=>"No se encontro el segmento" )); 
+               
             }
         }
     }
-
+    
+     /**
+     * Permite obtener estadisticas en tabla de las pantallas registradas
+     * parametros recibidos via GET
+     * @before es necesario usar el metodo loaddata
+     * @throw <400 bad request>  si los datos son invalidos
+     * @throw <201 accepted>  respuesta con los datos en formato JSON.
+     */            
     private function getViews() {
         $this->loadData($this->screenstatistics);
         $result = null;
         if ($this->validateData($this->useremail, $this->idApp)) {
             $result = $this->screenstatistics->getScreenViews($this->idApp, $this->initialDate, $this->finalDate);
-            //$this->prepareAndResponse("200", "Success", array("success" => "true", "result" => $result));
             $this->response([
                 'status' => TRUE,
                 'message' => "success",
@@ -172,20 +210,21 @@ class Screens extends EthRESTController {
                 'message' => "Fail",
                 "result" => array()
                     ], REST_Controller::HTTP_BAD_REQUEST);
-            //$this->prepareAndResponse("200", "Fail", array("success" => "false", "result" => array()));
+            
         }
     }
 
     /**
      * Funcion principal del servicio, aqui se se reciben los parametros via peticion http.
-     * @param string $idapp en base64, identificador de la aplicacion.
-     * @param string $idDownload en base64, identificador de la descarga.
-     * @param string $versionEthAppsSystem en base64, Numero de la version de la API
-     * @param string $idVersion en base64, versionn de la aplicacion que obtiene las variables.
-     * @param string $idSession en base64, id de la sessio
-     * @param string $screen en base64, texto o nombre de la pantalla que se registrara
-     * @return json string , respuesta con las variables o el mensaje de error.
-     *
+     * @param string idapp  identificador de la aplicacion.
+     * @param string idDownload  identificador de la descarga.
+     * @param string versionEthAppsSystem  Numero de la version de la API
+     * @param string idVersion  versionn de la aplicacion que obtiene las variables.
+     * @param string idSession  id de la sessio
+     * @param string screen  texto o nombre de la pantalla que se registrara
+     * @return json string  respuesta con las variables o el mensaje de error.
+     * @throw <400 bad request>  si los datos son invalidos
+     * @throw <201 accepted>  respuesta con los datos en formato JSON.
      */
     public function index_post() {
         print_r($this->post());
@@ -207,9 +246,8 @@ class Screens extends EthRESTController {
                 'status' => TRUE,
                 'message' => "REPORTED"
                     ], REST_Controller::HTTP_ACCEPTED);
-            //$this->prepareAndResponse("200", "Success");
+
         } else {
-            //$this->prepareAndResponse("403", "Fail");
             $this->response([
                 'status' => FALSE,
                 'message' => "no inicio sesion"
@@ -220,11 +258,11 @@ class Screens extends EthRESTController {
     /**
      * Esta funcion realiza un reporte de un evento en la base de datos.
      * @param string $versionEthAppsSystem version la api.
-     * @param string $idversion, version de la aplicacion
-     * @param string $idDownload en base64, identificador de la descarga.
-     * @param string $idApp en base64, identificador de la aplicacion.
-     * @param string $idSession en base64, id de la session
-     * @param string $screen en base64, pantalla  a registrar.	
+     * @param string $idVersion version de la aplicacion
+     * @param string $idDownload  identificador de la descarga.
+     * @param string $idApp  identificador de la aplicacion.
+     * @param string $idSession  id de la session
+     * @param string $screen pantalla  a registrar.	
      * @return void
      */
     private function report($versionEthAppsSystem, $idVersion, $idDownload, $idApp, $idSession, $screen) {
@@ -232,6 +270,9 @@ class Screens extends EthRESTController {
         $this->screen->reportScreen($versionEthAppsSystem, $idVersion, $idDownload, $idApp, $idSession, $screen);
     }
 
+    /**
+     * funcion encargada del manejo de la actualizacion
+     */
     public function index_put() {
         $this->response([
             'status' => FALSE,
@@ -239,6 +280,9 @@ class Screens extends EthRESTController {
                 ], REST_Controller::HTTP_BAD_REQUEST);
     }
 
+    /**
+     * funcion encargada del manejo de eliminacion
+     */
     public function index_delete() {
         $this->response([
             'status' => FALSE,

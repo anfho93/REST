@@ -11,19 +11,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH . '/libraries/REST_Controller.php';
 
 /**
- * Description of EthRESTController
- *
- * @author andres
+ * Controlador que contiene  funciones principales y que los demas
+ * controladores de servicios REST deben usar.
  */
 class EthRESTController extends REST_Controller {
 
-    //put your code here
+    
 
-
+    /**
+     * Valida un identificador de sesion
+     * @param string $session_id identificador de la sesion del usuario del app
+     * @return boolean si coincide o no
+     */
     function session_valid_id($session_id) {
         return preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $session_id) > 0;
     }
 
+    /**
+     * Permite verificar que una sesion creada este aun vigente
+     * @param string $lastIDSession ultimo identificador de sesion
+     * @return boolean 
+     */
     public function verifySession($lastIDSession) {
         //para modo desarrollo
         return true;

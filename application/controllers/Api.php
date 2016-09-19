@@ -16,16 +16,20 @@ class Api extends CI_Controller {
     private $api = null;
 
     public function index() {
-
-        
-         
         if ($this->load_version($this->uri->segment(2), $this->uri->segment(3))) {
-            
+           //funciona cada metodo ejecutado responde
         } else {
-         
+         //faltan datos no se responde.
         }
     }
-
+    /**
+     * Permite versionar las funcionalidades de la api, por defecto la version actual es la 2, 
+     * debe tambien definirse el nombre del servicio a consumir, para poder continuar con el
+     * proceso.
+     * @param string $version , identificador e la sesion
+     * @param string $class , nombre del endpoint del servicio.
+     * @return boolean , true si se puedo ejecutar la funcionalidad, false de lo contrario.
+     */
     private function load_version($version = "v2", $class = "def") {
         try {
             

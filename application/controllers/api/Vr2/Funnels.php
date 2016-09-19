@@ -7,18 +7,17 @@
  */
 
 /**
- * Description of Funnel
+ * la clase funnel mapea el enpoint de el servicio web, que administra los funnels de las aplicaciones
  *
- * @author andres
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// This can be removed if you use __autoload() in config.php OR use Modular Extensions
-//require APPPATH . '/libraries/REST_Controller.php';
 require 'EthRESTController.php';
 
 class Funnels extends EthRESTController{
-    
+    /**
+     * constructor de la clase que valida datos relacionados con la URL
+     */
     public function __construct() {
         parent::__construct();
         $methodname = strtolower("index_" . $this->request->method);
@@ -28,7 +27,11 @@ class Funnels extends EthRESTController{
     }
     
    
-    
+    /**
+     * metodo interfaz encargado de identificar que funcion se desea
+     * ejecutar 
+     * @throw <400 Bad Request> si no hay una funcion relacionada con el endpoint del web service
+     */
     public function index_get() {
         if ($this->_pre_get() != null) {
             
@@ -52,6 +55,13 @@ class Funnels extends EthRESTController{
         }
     }
     
+    /**
+     * parametros recibidos por metodo get
+     * @param string idapp identificador de la aplicacion
+     * @param string funnelid identificador del funnel de una aplicacion
+     * @throw <400 bad request> respuesta del servidor cuando los datos enviados no son correctos
+     * @throw <201 accepted> respuesta obtenida cuando el funnel es encontrado y se obtienen los datos .
+     */
     private function funnelData() {
         $idApp = $this->get('idapp');
         $funnelID = $this->get('funnelid');
@@ -70,7 +80,9 @@ class Funnels extends EthRESTController{
         }       
     }
     
-    
+    /**
+     * Permite comunicarse con un servicio externo para verificar el estado de un funnel
+     */
     private function funnelStatus(){
          $funnelID = $this->get('funnelid');
         $url = "http://ethgame.com:11000/oozie/v2/job/" . $funnelID . "?show=status";
@@ -81,6 +93,13 @@ class Funnels extends EthRESTController{
         //$this->response(['status' => FALSE, 'message' => "Something went wrong"], REST_Controller::HTTP_BAD_REQUEST);
     }
     
+    /**
+     * Permite filtrar los datos de funnels basados en correo electronico y estado actual
+     * @param string useremail  correo electronnico del usuario
+     * @param string cond tipo de estado que se desea buscar
+     * @throw <400 bad request> mensaje enviado cuando los datos enviados no corresponden con los de la base de datos
+     * @throw <200 Accepted> mensaje enviado cuando los datos enviados  corresponden con los de la base de datos
+     */
      private function resume() {
         $user_email = $this->get('useremail');
         $cond = $this->get('cond');
@@ -116,7 +135,11 @@ class Funnels extends EthRESTController{
         }
     }
 
-        
+        /**
+         * Funcion que permite actualizar el estado de un funnel
+         * @param string $user_email correo electronico del usuario
+         * @param array $funnel conjunto de funels del usuario.
+         */
       private function updateFunnelState($user_email, $funnel) {
         $this->load->model(ETHVERSION."funnel", "funnel");
         foreach ($funnel as $row) {
@@ -135,7 +158,14 @@ class Funnels extends EthRESTController{
             }
         }
     }
-
+    /**
+     * @param string  userenmail  correo electronico del usuario del sistema de analiticas
+     * @param string  keys palabras clave para la creacion del funnel
+     * @param string idApp identificador de la aplciacion que envia el funnel
+     * @param jsonstring events eventos que seran analizados en el funnel
+     * @param initialDate fecha inicial
+     * @param finalDate fecha final
+     */
     public function index_post() {        
         $user_email = $this->post('useremail');
         $keys = $this->post('keys');
@@ -167,13 +197,18 @@ class Funnels extends EthRESTController{
         
     }
 
+    /**
+     * interfaz que captura las peticiones PUT
+     */
     public function index_put() {
        $this->response([
             'status' => FALSE,
             'message' => "Not Available"
                 ], REST_Controller::HTTP_FORBIDDEN); 
     }
-
+    /**
+     * interfaz que captura las peticiones DELETE
+     */
     public function index_delete() {
        $this->response([
             'status' => FALSE,
@@ -183,7 +218,7 @@ class Funnels extends EthRESTController{
     
     /**
      * Verifica si un texto termina con un texto determinado
-     * @param type $haystack
+     * @param type $haystack 
      * @param type $needle
      * @return type 
      */
@@ -192,6 +227,13 @@ class Funnels extends EthRESTController{
         return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== FALSE);
     }
 
+    /**
+     * Agrega un nuevo registro de Funnel al sistema 
+     * @param string $wokflowID identificador del flujo de trabajo
+     * @param string $email correo electronico del usuario propietario del funnel
+     * @param string $idfunnel  identificador del funnel 
+     * @return type
+     */
     private function addFunnelRegister($wokflowID, $email, $idfunnel) {
         $this->load->model(ETHVERSION."funnel", "funnel");
         $result = $this->funnel->addFunnelRegister($wokflowID, $email, $idfunnel);
